@@ -1,16 +1,27 @@
+//
+//  LocaleSettingsViews.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/22.
+//
+
 import SwiftUI
 
 struct LanguageSettingsView: View {
     @EnvironmentObject private var store: LedgerStore
-    private let options = [("zh-Hans", "中文（简体）"), ("en", "English"), ("es", "Español")]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 10) {
-                ForEach(options, id: \.0) { code, name in
-                    LedgerSelectCell(title: name, selected: store.settings.languageCode == code) {
-                        store.settings.languageCode = code
-                        UserDefaults.standard.set([code], forKey: "AppleLanguages")
+                ForEach(AppLocaleCatalog.all) { entry in
+                    LedgerSelectCell(
+                        title: entry.languageName,
+                        selected: store.settings.languageCode == entry.languageCode
+                    ) {
+                        store.settings.languageCode = entry.languageCode
+                        store.settings.currencyCode = entry.currencyCode
+                        store.settings.currencySymbol = entry.symbol
+                        UserDefaults.standard.set([entry.languageCode], forKey: "AppleLanguages")
                         UserDefaults.standard.synchronize()
                         store.save()
                     }
@@ -25,48 +36,36 @@ struct LanguageSettingsView: View {
     }
 }
 
-private struct CurrencyOption: Identifiable {
-    let id: String
-    let symbol: String
-    var titleKey: String { "currency.\(id.lowercased())" }
-}
-
 struct CurrencySettingsView: View {
     @EnvironmentObject private var store: LedgerStore
-
-    private let options: [CurrencyOption] = [
-        .init(id: "USD", symbol: "$"),
-        .init(id: "EUR", symbol: "€"),
-        .init(id: "GBP", symbol: "£"),
-        .init(id: "JPY", symbol: "¥"),
-        .init(id: "CNY", symbol: "¥"),
-        .init(id: "HKD", symbol: "HK$"),
-        .init(id: "TWD", symbol: "NT$"),
-        .init(id: "KRW", symbol: "₩"),
-        .init(id: "SGD", symbol: "S$"),
-        .init(id: "AUD", symbol: "A$"),
-        .init(id: "CAD", symbol: "C$")
-    ]
 
     var body: some View {
         ScrollView {
             VStack(spacing: 10) {
-                ForEach(options) { opt in
+                ForEach(AppLocaleCatalog.all) { entry in
                     Button {
-                        store.settings.currencySymbol = opt.symbol
-                        store.settings.currencyCode = opt.id
+                        store.settings.currencySymbol = entry.symbol
+                        store.settings.currencyCode = entry.currencyCode
+                        store.settings.languageCode = entry.languageCode
+                        UserDefaults.standard.set([entry.languageCode], forKey: "AppleLanguages")
+                        UserDefaults.standard.synchronize()
                         store.save()
                     } label: {
                         HStack(spacing: 12) {
-                            Text(opt.symbol)
+                            Text(entry.symbol)
                                 .font(.system(size: 20, weight: .medium, design: .rounded))
                                 .foregroundStyle(AppTheme.textPrimary)
                                 .frame(width: 52, alignment: .leading)
-                            Text("\(opt.id) · \(L10n.t(opt.titleKey))")
-                                .font(.body)
-                                .foregroundStyle(AppTheme.textPrimary)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                            if store.settings.currencyCode == opt.id {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(entry.currencyCode) · \(L10n.t("currency.\(entry.currencyCode.lowercased())"))")
+                                    .font(.body)
+                                    .foregroundStyle(AppTheme.textPrimary)
+                                Text(entry.languageName)
+                                    .font(.caption)
+                                    .foregroundStyle(AppTheme.textSecondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            if store.settings.currencyCode == entry.currencyCode {
                                 Image(systemName: "checkmark")
                                     .font(.body.weight(.semibold))
                                     .foregroundStyle(AppTheme.greenDark)

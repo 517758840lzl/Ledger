@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Ledger
 //
-//  Created by Flynn on 2026/11/3.
+//  Created by Ketty on 2026/10/08.
 //
 
 import UIKit

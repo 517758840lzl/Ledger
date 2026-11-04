@@ -1,3 +1,10 @@
+//
+//  BudgetEditorView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/18.
+//
+
 import SwiftUI
 
 struct BudgetEditorView: View {

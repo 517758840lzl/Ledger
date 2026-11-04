@@ -1,6 +1,13 @@
+//
+//  MonthlyCharts.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/11.
+//
+
 import SwiftUI
 
-/// 对标 Android 月报「支出占比」甜甜圈 + 图例
+/// Monthly expense-share donut + legend
 struct MonthlySpendDonut: View {
     let items: [(name: String, amount: Double, color: Color)]
     let total: Double

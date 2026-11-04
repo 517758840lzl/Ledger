@@ -1,3 +1,10 @@
+//
+//  SettingsHomeView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/24.
+//
+
 import SwiftUI
 
 struct SettingsHomeView: View {

@@ -1,3 +1,10 @@
+//
+//  AddEntryFormSections.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/09.
+//
+
 import SwiftUI
 
 extension AddEntryView {
@@ -120,7 +127,7 @@ extension AddEntryView {
         VStack(alignment: .leading, spacing: 10) {
             Text(L10n.category).font(.headline)
             let cats = store.categories(for: type)
-            // 对标 Android：圆形 icon 横滑，选中深绿描边
+            // Horizontal circular icons; selected gets dark green stroke
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 14) {
                     ForEach(cats) { cat in
@@ -330,7 +337,7 @@ extension AddEntryView {
         if keepOpen {
             amountText = "0"; note = ""; subcategory = nil
         } else {
-            // path 驱动的 NavigationStack：必须 pop path，dismiss() 常留在记一笔页
+            // Path-driven stack must pop path; dismiss() often leaves Add visible
             router.popFlow()
         }
     }

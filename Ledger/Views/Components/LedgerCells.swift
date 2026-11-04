@@ -1,6 +1,13 @@
+//
+//  LedgerCells.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/30.
+//
+
 import SwiftUI
 
-/// 对标 Android：白底圆角卡片容器
+/// White rounded card container
 struct LedgerCard<Content: View>: View {
     var padding: CGFloat = 14
     var radius: CGFloat = 16
@@ -14,7 +21,7 @@ struct LedgerCard<Content: View>: View {
     }
 }
 
-/// 对标 Android outlined 输入行：边框 + 顶边嵌入标签
+/// Outlined field: border + embedded top label
 struct LedgerOutlinedField: View {
     let label: String
     let value: String
@@ -53,7 +60,7 @@ struct LedgerOutlinedField: View {
     }
 }
 
-/// 对标 Android 账户列表 cell：头像圆 + 标题/副标题 + 金额 + 底部分割线 Edit
+/// Account list cell: avatar + title/subtitle + amount + Edit divider
 struct LedgerAccountCell: View {
     let title: String
     let subtitle: String
@@ -112,7 +119,7 @@ struct LedgerAccountCell: View {
     }
 }
 
-/// 对标 Android 选择列表 cell：选中浅绿底 + 勾
+/// Selectable cell: light green fill + checkmark when selected
 struct LedgerSelectCell: View {
     let title: String
     let selected: Bool
@@ -142,7 +149,7 @@ struct LedgerSelectCell: View {
     }
 }
 
-/// 对标 Android 流水 cell：左彩色圆标 + 标题/副标题 + 金额
+/// Flow cell: colored icon + title/subtitle + amount
 struct LedgerTxnCell: View {
     let title: String
     let subtitle: String
@@ -152,7 +159,7 @@ struct LedgerTxnCell: View {
     var iconForeground: Color = AppTheme.greenDark
     var iconBackground: Color = AppTheme.greenSoft
     var showsChevron: Bool = false
-    /// 嵌在日分组白卡内时不再自带圆角底
+    /// When embedded in a day card, skip own rounded background
     var embedded: Bool = false
     var action: (() -> Void)?
 
@@ -197,7 +204,7 @@ struct LedgerTxnCell: View {
     }
 }
 
-/// 对标 Android：同一天多笔流水装进一张白卡，中间 inset 分割线
+/// Multiple txs for one day share one white card with inset dividers
 struct LedgerTxnDayCard<Content: View>: View {
     @ViewBuilder var content: () -> Content
 
@@ -209,7 +216,7 @@ struct LedgerTxnDayCard<Content: View>: View {
     }
 }
 
-/// 表单内下划线输入（账户编辑对标 Android）
+/// Underline text field used in account editor forms
 struct LedgerUnderlineField: View {
     let label: String
     @Binding var text: String

@@ -1,3 +1,10 @@
+//
+//  OnboardingView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/07.
+//
+
 import SwiftUI
 
 struct OnboardingView: View {

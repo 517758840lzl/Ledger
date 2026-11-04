@@ -1,6 +1,13 @@
+//
+//  CategoryVisual.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/21.
+//
+
 import SwiftUI
 
-/// 对标 Android 流水左侧彩色圆标
+/// Colored circle icons for flow rows
 enum CategoryVisual {
     struct Style {
         let systemImage: String
@@ -14,7 +21,7 @@ enum CategoryVisual {
         case .income:
             return incomeStyle(name)
         case .transfer:
-            // 对标 Android：浅蓝底 + 双向箭头
+            // Light blue fill + bidirectional arrows
             return Style(
                 systemImage: "arrow.left.arrow.right",
                 foreground: Color(red: 0.20, green: 0.45, blue: 0.85),

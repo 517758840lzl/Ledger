@@ -1,3 +1,10 @@
+//
+//  L10n.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/26.
+//
+
 import Foundation
 
 /// Typed localization keys. Prefer `L10n.xxx` over string literals in UI.

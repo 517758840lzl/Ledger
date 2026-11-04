@@ -1,3 +1,10 @@
+//
+//  AccountsSettingsViews.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/11/01.
+//
+
 import SwiftUI
 
 struct AccountsSettingsView: View {

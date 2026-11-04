@@ -1,3 +1,10 @@
+//
+//  AppRouter.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/14.
+//
+
 import SwiftUI
 import Combine
 
@@ -45,11 +52,11 @@ final class AppRouter: ObservableObject {
     @Published var assetsPath = NavigationPath()
     @Published var settingsPath = NavigationPath()
 
-    /// 中央 + ：切到流水 Tab 并 push 记一笔（不是 modal）
+    /// Center + : switch to Flow and push Add (not a modal)
     func openAdd(presetDate: Date? = nil) {
         pendingPresetDate = presetDate
         tab = .flow
-        // 避免重复 push 叠多层「记一笔」，保存/返回后路径对不上
+        // Reset path so Save/Back cannot stack multiple Add screens
         flowPath = NavigationPath()
         flowPath.append(FlowRoute.add)
     }
@@ -59,7 +66,7 @@ final class AppRouter: ObservableObject {
         flowPath.append(FlowRoute.edit(transactionId))
     }
 
-    /// 记一笔 / 详情退出：必须改 path，单靠 dismiss() 在 path 驱动的 NavigationStack 上常弹不干净
+    /// Pop via path; dismiss() often fails to leave path-driven stacks
     func popFlow() {
         guard !flowPath.isEmpty else { return }
         flowPath.removeLast()
@@ -70,6 +77,11 @@ final class AppRouter: ObservableObject {
         settingsPath.removeLast()
     }
 
-    /// 记一笔可选预填日期（日历空日 CTA）
+    func popAssets() {
+        guard !assetsPath.isEmpty else { return }
+        assetsPath.removeLast()
+    }
+
+    /// Optional preset date from the calendar empty-day CTA
     var pendingPresetDate: Date?
 }

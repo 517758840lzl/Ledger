@@ -1,3 +1,10 @@
+//
+//  CategoriesSettingsViews.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/20.
+//
+
 import SwiftUI
 
 struct CategoriesSettingsView: View {

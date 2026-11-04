@@ -1,3 +1,10 @@
+//
+//  CalendarFlowView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/13.
+//
+
 import SwiftUI
 
 struct CalendarFlowView: View {
@@ -32,7 +39,7 @@ struct CalendarFlowView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // 对标 Android：无结余卡，只有月份切换 + 日格
+                // Month switcher + day grid only (no balance card)
                 HStack {
                     Button {
                         cursor = cal.date(byAdding: .month, value: -1, to: cursor) ?? cursor

@@ -1,3 +1,10 @@
+//
+//  AboutSettingsViews.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/20.
+//
+
 import SwiftUI
 
 struct AboutSettingsView: View {
@@ -84,7 +91,7 @@ struct AboutSettingsView: View {
     }
 }
 
-/// 对标 Android 隐私政策：分段标题 + 正文，可滚到底看生效日期
+/// Privacy policy: section titles + body, scroll to effective date
 struct PrivacyPolicyView: View {
     private let sections: [(titleKey: String, bodyKey: String)] = [
         ("settings.privacy_intro_title", "settings.privacy_intro_body"),

@@ -1,3 +1,10 @@
+//
+//  HistoryBillsView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/28.
+//
+
 import SwiftUI
 
 struct HistoryBillsView: View {

@@ -1,9 +1,16 @@
+//
+//  SummaryCard.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/11/02.
+//
+
 import SwiftUI
 
 struct SummaryCard: View {
     @EnvironmentObject private var store: LedgerStore
     let yearMonth: String
-    /// 对标 Android Insights：结余卡底部「较上月」
+    /// Balance card footer: vs last month
     var vsLastMonth: String? = nil
 
     var body: some View {

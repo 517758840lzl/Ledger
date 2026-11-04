@@ -1,3 +1,10 @@
+//
+//  AddEntryView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/11/03.
+//
+
 import SwiftUI
 import UIKit
 
@@ -28,7 +35,7 @@ struct AddEntryView: View {
         VStack(spacing: 0) {
             ScrollView {
                 VStack(spacing: 12) {
-                    // 对标 Android：类型切换在金额上方
+                    // Type switch sits above the amount
                     typePicker
                     amountCard
                     detailsCard
@@ -42,7 +49,7 @@ struct AddEntryView: View {
             }
             .scrollDismissesKeyboard(.interactively)
 
-            // 对标 Android：白底圆角键盘条钉在底部
+            // White rounded keypad bar pinned to the bottom
             keypad
                 .padding(12)
                 .background(
@@ -76,7 +83,7 @@ struct AddEntryView: View {
             }
         }
         .onAppear(perform: bootstrap)
-        // 选账户：对标 Android 底部 sheet；列表用自定义选中 cell
+        // Account picker as bottom sheet with custom selected cells
             .sheet(isPresented: $showAccountPicker) {
             AccountPickerSheet(
                 accounts: store.enabledAccounts(),

@@ -1,3 +1,10 @@
+//
+//  RootTabView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/24.
+//
+
 import SwiftUI
 
 enum RootTab: Hashable {
@@ -8,7 +15,7 @@ struct RootTabView: View {
     @EnvironmentObject private var store: LedgerStore
     @EnvironmentObject private var router: AppRouter
 
-    /// 对标 Android：二级页（记一笔/账户等）全屏 push，底栏隐藏，避免挡住「保存」
+    /// Hide the tab bar on pushed detail screens so the bottom Save button stays reachable.
     private var showsTabBar: Bool {
         switch router.tab {
         case .flow: return router.flowPath.isEmpty
@@ -88,8 +95,10 @@ struct RootTabView: View {
         } label: {
             VStack(spacing: 4) {
                 Group {
-                    if let asset {
-                        Image(asset)
+                    if asset != nil {
+                        // Outline when idle (matches SF Symbol weight); filled when selected.
+                        Image(on ? "TabPiggy" : "TabPiggyOutline")
+                            .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 22, height: 22)
@@ -98,6 +107,7 @@ struct RootTabView: View {
                             .font(.system(size: 18, weight: .semibold))
                     }
                 }
+                .foregroundStyle(on ? AppTheme.greenDark : AppTheme.textSecondary)
                 .frame(width: 40, height: 32)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -105,8 +115,8 @@ struct RootTabView: View {
                 )
                 Text(title)
                     .font(.system(size: 11, weight: on ? .semibold : .medium))
+                    .foregroundStyle(on ? AppTheme.greenDark : AppTheme.textSecondary)
             }
-            .foregroundStyle(on ? AppTheme.greenDark : AppTheme.textSecondary)
             .frame(maxWidth: .infinity)
         }
     }

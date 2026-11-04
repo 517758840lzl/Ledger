@@ -1,6 +1,13 @@
+//
+//  AccountVisual.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/19.
+//
+
 import SwiftUI
 
-/// 对标 Android 资产「各来源」左侧色块 icon
+/// Tinted leading icons for asset sources
 enum AccountVisual {
     struct Style {
         let systemImage: String

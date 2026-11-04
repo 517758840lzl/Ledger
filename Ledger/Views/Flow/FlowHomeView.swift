@@ -1,3 +1,10 @@
+//
+//  FlowHomeView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/31.
+//
+
 import SwiftUI
 
 struct FlowHomeView: View {
@@ -51,7 +58,7 @@ struct FlowHomeView: View {
                     .padding(12)
                     .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(AppTheme.card))
 
-                    // 对标 Android：整条浅灰胶囊 + 等宽四段，选中白底滑块
+                    // Gray capsule track, equal segments, white selected pill
                     filterSegmentedBar
 
                     if filtered.isEmpty {

@@ -1,3 +1,10 @@
+//
+//  Models.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/11/03.
+//
+
 import Foundation
 
 enum TxType: String, Codable, CaseIterable, Identifiable {
@@ -46,7 +53,7 @@ struct Category: Identifiable, Hashable {
     var canReduce: Bool = false
     var enabled: Bool = true
     var children: [String] = []
-    /// 子分类名在此列表中表示已禁用（记一笔不展示，设置里可再启用）
+    /// Disabled subcategory names (hidden in Add; re-enable in Settings)
     var disabledChildren: [String] = []
 
     func activeChildren() -> [String] {
@@ -92,14 +99,14 @@ struct MonthBudget: Identifiable, Codable, Hashable {
 }
 
 struct AppSettings: Codable, Hashable {
-    var languageCode: String = "zh-Hans"
-    var currencySymbol: String = "$"
-    var currencyCode: String = "USD"
+    var languageCode: String = AppLocaleCatalog.defaultLanguageCode
+    var currencySymbol: String = AppLocaleCatalog.defaultCurrencySymbol
+    var currencyCode: String = AppLocaleCatalog.defaultCurrencyCode
     var reminderEnabled: Bool = false
     var reminderHour: Int = 21
     var reminderMinute: Int = 30
     var hasSeenOnboarding: Bool = false
-    /// 对标 Android 资产页「储蓄目标」
+    /// Savings goal shown on the assets net-worth card.
     var savingsGoal: Double = 0
 
     enum CodingKeys: String, CodingKey {
@@ -112,9 +119,9 @@ struct AppSettings: Codable, Hashable {
 
     init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        languageCode = try c.decodeIfPresent(String.self, forKey: .languageCode) ?? "zh-Hans"
-        currencySymbol = try c.decodeIfPresent(String.self, forKey: .currencySymbol) ?? "$"
-        currencyCode = try c.decodeIfPresent(String.self, forKey: .currencyCode) ?? "USD"
+        languageCode = try c.decodeIfPresent(String.self, forKey: .languageCode) ?? AppLocaleCatalog.defaultLanguageCode
+        currencySymbol = try c.decodeIfPresent(String.self, forKey: .currencySymbol) ?? AppLocaleCatalog.defaultCurrencySymbol
+        currencyCode = try c.decodeIfPresent(String.self, forKey: .currencyCode) ?? AppLocaleCatalog.defaultCurrencyCode
         reminderEnabled = try c.decodeIfPresent(Bool.self, forKey: .reminderEnabled) ?? false
         reminderHour = try c.decodeIfPresent(Int.self, forKey: .reminderHour) ?? 21
         reminderMinute = try c.decodeIfPresent(Int.self, forKey: .reminderMinute) ?? 30

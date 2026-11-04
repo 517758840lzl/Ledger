@@ -1,6 +1,13 @@
+//
+//  MonthlyExtraViews.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/28.
+//
+
 import SwiftUI
 
-/// 月报「查看分类支出明细」
+/// Monthly category expense detail
 struct MonthlyCategoryDetailView: View {
     @EnvironmentObject private var store: LedgerStore
     let categoryId: UUID
@@ -45,7 +52,7 @@ struct MonthlyCategoryDetailView: View {
     }
 }
 
-/// 月报入口：设置哪些分类可少花
+/// Settings entry for which categories can be reduced
 struct CanReduceSettingsView: View {
     @EnvironmentObject private var store: LedgerStore
 

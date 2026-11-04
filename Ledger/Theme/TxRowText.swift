@@ -1,6 +1,13 @@
+//
+//  TxRowText.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/06.
+//
+
 import Foundation
 
-/// 流水行标题/副标题，对标 Android 列表文案
+/// Flow row title/subtitle copy aligned with Android
 enum TxRowText {
     static func title(tx: Transaction, store: LedgerStore) -> String {
         if tx.type == .transfer {

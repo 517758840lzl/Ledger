@@ -2,6 +2,8 @@
 //  SceneDelegate.swift
 //  Ledger
 //
+//  Created by Ketty on 2026/10/12.
+//
 
 import UIKit
 import SwiftUI

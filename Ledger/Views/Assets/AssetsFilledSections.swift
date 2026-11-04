@@ -1,6 +1,13 @@
+//
+//  AssetsFilledSections.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/15.
+//
+
 import SwiftUI
 
-/// 对标 Android 资产已配置态：净资产卡（含储蓄目标）
+/// Configured assets: net-worth card (with savings goal)
 struct AssetsNetWorthCard: View {
     @EnvironmentObject private var store: LedgerStore
 
@@ -23,7 +30,7 @@ struct AssetsNetWorthCard: View {
                 .foregroundStyle(.white)
 
             if goal > 0 {
-                // 对标 Android：深绿轨道 + 浅绿进度
+                // Dark green track + light green progress
                 GeometryReader { geo in
                     ZStack(alignment: .leading) {
                         Capsule().fill(Color.black.opacity(0.28))
@@ -57,7 +64,7 @@ struct AssetsNetWorthCard: View {
 
                 Group {
                     if progress >= 1 {
-                        // 对标 Android：超出目标时展示超额金额
+                        // Show over-goal amount when progress exceeds 100%
                         Text(String(format: L10n.t("assets.goal_over"), store.symbol(worth - goal)))
                     } else {
                         Text(String(format: L10n.t("assets.goal_progress"), pct))
@@ -80,7 +87,7 @@ struct AssetsNetWorthCard: View {
     }
 }
 
-/// 对标 Android「各来源」：色块 icon + 名称 + 灰 pill + 金额（无 chevron）
+/// Sources row: tinted icon + name + gray pill + amount (no chevron)
 struct AssetsSourceCard: View {
     @EnvironmentObject private var store: LedgerStore
     let account: Account
@@ -126,7 +133,7 @@ struct AssetsSourceCard: View {
     }
 }
 
-/// 对标 Android「最近 10 笔支出」
+/// Recent 10 expenses block
 struct AssetsRecentExpensesBlock: View {
     @EnvironmentObject private var store: LedgerStore
     @EnvironmentObject private var router: AppRouter
@@ -191,7 +198,7 @@ struct AssetsRecentExpensesBlock: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(cat?.name ?? L10n.expense)
                                     .font(.subheadline.weight(.semibold))
-                                // 对标 Android：现金 · 备注/无备注
+                                // Account · note / no-note
                                 let accName = store.account(id: tx.accountId)?.name ?? ""
                                 let note = tx.note.isEmpty ? L10n.t("flow.no_note") : tx.note
                                 Text("\(accName) · \(note)")

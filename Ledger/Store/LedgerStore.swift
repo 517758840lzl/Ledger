@@ -1,3 +1,10 @@
+//
+//  LedgerStore.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/17.
+//
+
 import Foundation
 import Combine
 
@@ -19,6 +26,23 @@ final class LedgerStore: ObservableObject {
             seedDefaults()
             save()
         }
+        migrateDefaultLocaleIfNeeded()
+        applyLanguagePreference()
+    }
+
+    /// One-time switch from the old Chinese default to English + USD.
+    private func migrateDefaultLocaleIfNeeded() {
+        let key = "ledger.migratedDefaultEn"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        settings.languageCode = AppLocaleCatalog.defaultLanguageCode
+        settings.currencyCode = AppLocaleCatalog.defaultCurrencyCode
+        settings.currencySymbol = AppLocaleCatalog.defaultCurrencySymbol
+        UserDefaults.standard.set(true, forKey: key)
+        save()
+    }
+
+    private func applyLanguagePreference() {
+        UserDefaults.standard.set([settings.languageCode], forKey: "AppleLanguages")
     }
 
     // MARK: - Persistence
@@ -166,7 +190,7 @@ final class LedgerStore: ObservableObject {
             .sorted { $0.date > $1.date }
     }
 
-    /// 解析本应用导出的 CSV（含 accounts/categories/budgets/transactions 分段或纯流水表）
+    /// Parse app-exported CSV (sectioned or flat transaction table)
     @discardableResult
     func importCSV(text: String) -> Int {
         var added = 0
@@ -282,7 +306,7 @@ final class LedgerStore: ObservableObject {
         let wageCat = categories.first(where: { $0.name == "工资" && $0.type == .income })
         let lunch = Transaction(type: .expense, amount: 55, accountId: cash.id, categoryId: lunchCat?.id, note: "导入-午饭", date: date(y: 2026, m: 9, d: 3))
         let ear = Transaction(type: .expense, amount: 199, accountId: cash.id, categoryId: shopCat?.id, note: "导入-耳机壳", date: date(y: 2026, m: 8, d: 28))
-        // 含当月一笔，避免导入后「当月」筛选仍是空态，便于立刻走完流水→月报闭环
+        // Include a current-month row so This Month is not empty after import
         let todayCoffee = Transaction(type: .expense, amount: 28, accountId: cash.id, categoryId: lunchCat?.id, note: "导入-咖啡", date: Date())
         let todayWage = Transaction(type: .income, amount: 3000, accountId: cash.id, categoryId: wageCat?.id, note: "导入-工资", date: Date())
         for tx in [lunch, ear, todayCoffee, todayWage] where !transactions.contains(where: { $0.note == tx.note && $0.amount == tx.amount }) {

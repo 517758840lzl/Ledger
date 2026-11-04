@@ -1,3 +1,10 @@
+//
+//  AssetsHomeView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/31.
+//
+
 import SwiftUI
 
 struct AssetsHomeView: View {
@@ -5,8 +12,8 @@ struct AssetsHomeView: View {
     @EnvironmentObject private var router: AppRouter
 
     private var configured: Bool {
-        // 对标 Android：流水 / 设置里加记账账户不会结束「家底」引导；
-        // 只有资产表单保存过（或写入余额 / 手动更新）才进入净资产看板。
+        // Onboarding stays until assets are saved from the assets form
+        // (ledger txs / settings accounts alone do not dismiss it).
         UserDefaults.standard.bool(forKey: "ledger.assetsConfigured")
             || store.accounts.contains { $0.openingBalance != 0 || $0.manualOnly }
     }
@@ -58,9 +65,10 @@ struct AssetsHomeView: View {
     private var onboarding: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 12) {
-                // 对标 Android：深绿英雄卡 + 图标功能行 + 底部说明卡
+                // Dark green hero card + feature rows + footer note
                 VStack(alignment: .leading, spacing: 12) {
-                    Image("TabPiggy")
+                    // Hero uses Material savings outline (light green)
+                    Image("AssetsHeroPiggy")
                         .resizable()
                         .scaledToFit()
                         .frame(width: 28, height: 28)
@@ -152,7 +160,6 @@ struct AssetsHomeView: View {
 struct AssetsEditorView: View {
     @EnvironmentObject private var store: LedgerStore
     @EnvironmentObject private var router: AppRouter
-    @Environment(\.dismiss) private var dismiss
     @State private var goalText = ""
 
     var body: some View {
@@ -238,7 +245,8 @@ struct AssetsEditorView: View {
                 Button(L10n.save) {
                     store.settings.savingsGoal = Double(goalText.replacingOccurrences(of: ",", with: "")) ?? 0
                     store.save()
-                    dismiss()
+                    UserDefaults.standard.set(true, forKey: "ledger.assetsConfigured")
+                    router.popAssets()
                 }
                 .fontWeight(.semibold)
                 .foregroundStyle(AppTheme.greenDark)
@@ -263,7 +271,7 @@ struct AssetsEditorView: View {
 
 struct AssetFormView: View {
     @EnvironmentObject private var store: LedgerStore
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var router: AppRouter
     let kind: AccountKind
     let existing: Account?
 
@@ -330,7 +338,7 @@ struct AssetFormView: View {
                     acc.includeInNetWorth = includeInNetWorth
                     store.upsertAccount(acc)
                     UserDefaults.standard.set(true, forKey: "ledger.assetsConfigured")
-                    dismiss()
+                    router.popAssets()
                 }
             }
             .padding(16)

@@ -1,3 +1,10 @@
+//
+//  MonthlyReportView.swift
+//  Ledger
+//
+//  Created by Ketty on 2026/10/11.
+//
+
 import SwiftUI
 
 struct MonthlyReportView: View {
@@ -48,7 +55,7 @@ struct MonthlyReportView: View {
         }
         let prevYm = store.yearMonth(for: prev)
         let prevExp = store.monthExpense(prevYm)
-        // 对标 Android：上月支出为 0（无基线）一律「持平」，不显示上升/下降
+        // No prior-month baseline -> show Flat (not Up/Down)
         if prevExp == 0 { return L10n.t("monthly.flat") }
         let delta = (expense - prevExp) / prevExp
         if abs(delta) < 0.02 { return L10n.t("monthly.flat") }
@@ -134,7 +141,7 @@ struct MonthlyReportView: View {
                 .foregroundStyle(AppTheme.textPrimary)
                 .frame(maxWidth: .infinity)
                 .padding()
-                // 对标 Android：白底 + 深灰描边，不是绿色描边
+                // White fill + dark gray stroke (not green stroke)
                 .background(
                     Capsule()
                         .fill(AppTheme.card)
@@ -174,7 +181,7 @@ struct MonthlyReportView: View {
         .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppTheme.card))
     }
 
-    /// 对标 Android：支出占比甜甜圈 + 图例
+    /// Expense share donut + legend
     private var shareBlock: some View {
         let items: [(String, Double, Color)] = categoryBreakdown.enumerated().map { idx, pair in
             (pair.0.name, pair.1, MonthlyPalette.color(at: idx))
@@ -192,7 +199,7 @@ struct MonthlyReportView: View {
         .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppTheme.card))
     }
 
-    /// 对标 Android：主要支出（icon + 名称 + % + 金额）
+    /// Top expenses (icon + name + % + amount)
     private var mainSpendBlock: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(L10n.t("monthly.main_spend")).font(.headline)
@@ -229,7 +236,7 @@ struct MonthlyReportView: View {
         .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppTheme.card))
     }
 
-    /// 对标 Android：能少花的支出 + 明细入口 + 设置可少花
+    /// Reducible spend + detail CTA + can-reduce settings
     private var reducibleBlock: some View {
         let rows = categoryBreakdown.filter { $0.0.canReduce }
         return VStack(alignment: .leading, spacing: 12) {
@@ -244,7 +251,7 @@ struct MonthlyReportView: View {
             } else {
                 ForEach(rows, id: \.0.id) { item in
                     let pct = expense > 0 ? Int((item.1 / expense) * 100) : 0
-                    // 对标 Android：88×20%→18（四舍五入），不是 towardZero→17
+                    // 20% rounded to nearest (88 -> 18), not towardZero
                     let save = (item.1 * 0.2).rounded()
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
