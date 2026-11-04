@@ -184,7 +184,7 @@ struct MonthlyReportView: View {
     /// Expense share donut + legend
     private var shareBlock: some View {
         let items: [(String, Double, Color)] = categoryBreakdown.enumerated().map { idx, pair in
-            (pair.0.name, pair.1, MonthlyPalette.color(at: idx))
+            (pair.0.name.ledgerText, pair.1, MonthlyPalette.color(at: idx))
         }
         return VStack(alignment: .leading, spacing: 14) {
             Text(L10n.t("monthly.expense_share")).font(.headline)
@@ -213,7 +213,7 @@ struct MonthlyReportView: View {
                         .frame(width: 40, height: 40)
                         .background(Circle().fill(visual.background))
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(item.0.name)
+                        Text(item.0.name.ledgerText)
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(AppTheme.textPrimary)
                         Text("\(pct)%")
@@ -255,7 +255,7 @@ struct MonthlyReportView: View {
                     let save = (item.1 * 0.2).rounded()
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
-                            Text(item.0.name)
+                            Text(item.0.name.ledgerText)
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(AppTheme.textPrimary)
                             Spacer()
@@ -263,14 +263,14 @@ struct MonthlyReportView: View {
                                 .font(.subheadline.weight(.semibold))
                                 .foregroundStyle(AppTheme.greenDark)
                         }
-                        Text(String(format: L10n.t("monthly.reducible_reason_pct"), item.0.name, pct))
+                        Text(String(format: L10n.t("monthly.reducible_reason_pct"), item.0.name.ledgerText, pct))
                             .font(.caption)
                             .foregroundStyle(AppTheme.textSecondary)
                         Button {
                             router.monthlyPath.append(MonthlyRoute.categoryDetail(item.0.id, ym))
                         } label: {
                             HStack {
-                                Text(String(format: L10n.t("monthly.view_category_detail"), item.0.name))
+                                Text(String(format: L10n.t("monthly.view_category_detail"), item.0.name.ledgerText))
                                     .font(.subheadline.weight(.semibold))
                                 Spacer()
                                 Image(systemName: "chevron.right")
@@ -311,13 +311,15 @@ struct MonthlyReportView: View {
 
     private func monthTitle(_ ym: String) -> String {
         let p = ym.split(separator: "-")
-        guard p.count == 2 else { return ym }
-        let code = store.settings.languageCode
-        if code.hasPrefix("zh") {
-            return "\(p[0])年\(Int(p[1]) ?? 0)月"
-        }
-        let names = ["January","February","March","April","May","June","July","August","September","October","November","December"]
-        let mi = max(1, min(12, Int(p[1]) ?? 1)) - 1
-        return "\(names[mi]) \(p[0])"
+        guard p.count == 2, let year = Int(p[0]), let month = Int(p[1]) else { return ym }
+        var comps = DateComponents()
+        comps.year = year
+        comps.month = month
+        comps.day = 1
+        let date = Calendar.current.date(from: comps) ?? Date()
+        let f = DateFormatter()
+        f.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
+        f.setLocalizedDateFormatFromTemplate("yyyyMMM")
+        return f.string(from: date)
     }
 }

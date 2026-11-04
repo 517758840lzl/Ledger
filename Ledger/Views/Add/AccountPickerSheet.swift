@@ -21,7 +21,7 @@ struct AccountPickerSheet: View {
             ScrollView {
                 VStack(spacing: 10) {
                     ForEach(accounts) { acc in
-                        LedgerSelectCell(title: acc.name, selected: acc.id == selectedId) {
+                        LedgerSelectCell(title: acc.name.ledgerText, selected: acc.id == selectedId) {
                             onPick(acc)
                             dismiss()
                         }

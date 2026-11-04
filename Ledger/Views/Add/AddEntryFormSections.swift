@@ -66,19 +66,19 @@ extension AddEntryView {
                 HStack(spacing: 10) {
                     transferPick(
                         title: L10n.fromAccount,
-                        value: store.account(id: accountId ?? UUID())?.name ?? L10n.cash
+                        value: store.account(id: accountId ?? UUID())?.name.ledgerText ?? L10n.cash
                     ) { pickingTo = false; showAccountPicker = true }
                     Image(systemName: "arrow.left.arrow.right")
                         .foregroundStyle(AppTheme.greenDark)
                     transferPick(
                         title: L10n.toAccount,
-                        value: store.account(id: toAccountId ?? UUID())?.name ?? L10n.select
+                        value: store.account(id: toAccountId ?? UUID())?.name.ledgerText ?? L10n.select
                     ) { pickingTo = true; showAccountPicker = true }
                 }
             } else {
                 LedgerOutlinedField(
                     label: type == .expense ? L10n.payAccount : L10n.receiveAccount,
-                    value: store.account(id: accountId ?? UUID())?.name ?? L10n.cash
+                    value: store.account(id: accountId ?? UUID())?.name.ledgerText ?? L10n.cash
                 ) {
                     pickingTo = false
                     showAccountPicker = true
@@ -147,7 +147,7 @@ extension AddEntryView {
                                         Circle()
                                             .stroke(on ? AppTheme.greenDark : Color.clear, lineWidth: 2.5)
                                     )
-                                Text(cat.name)
+                                Text(cat.name.ledgerText)
                                     .font(.caption2.weight(.medium))
                                     .foregroundStyle(on ? AppTheme.greenDark : AppTheme.textSecondary)
                                     .lineLimit(1)
@@ -171,7 +171,7 @@ extension AddEntryView {
                                 Button {
                                     subcategory = (subcategory == tag) ? nil : tag
                                 } label: {
-                                    Text(tag)
+                                    Text(tag.ledgerText)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 8)
                                         .background(
@@ -372,6 +372,9 @@ extension AddEntryView {
     }
 
     func mediumDate(_ d: Date) -> String {
-        let f = DateFormatter(); f.locale = .current; f.setLocalizedDateFormatFromTemplate("MMMd"); return f.string(from: d)
+        let f = DateFormatter()
+        f.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
+        f.setLocalizedDateFormatFromTemplate("MMMd")
+        return f.string(from: d)
     }
 }

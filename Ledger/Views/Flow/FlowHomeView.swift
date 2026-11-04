@@ -19,12 +19,15 @@ struct FlowHomeView: View {
         store.transactions(in: ym, type: filter)
             .filter { tx in
                 guard !query.isEmpty else { return true }
-                let cat = store.category(id: tx.categoryId)?.name ?? ""
-                let acc = store.account(id: tx.accountId)?.name ?? ""
+                let cat = store.category(id: tx.categoryId)?.name.ledgerText ?? ""
+                let acc = store.account(id: tx.accountId)?.name.ledgerText ?? ""
+                let note = tx.note.ledgerText
+                let sub = tx.subcategory?.ledgerText ?? ""
                 return String(format: "%.2f", tx.amount).contains(query)
-                    || cat.contains(query)
-                    || acc.contains(query)
-                    || tx.note.contains(query)
+                    || cat.localizedCaseInsensitiveContains(query)
+                    || acc.localizedCaseInsensitiveContains(query)
+                    || note.localizedCaseInsensitiveContains(query)
+                    || sub.localizedCaseInsensitiveContains(query)
             }
             .sorted { $0.date > $1.date }
     }
@@ -225,7 +228,7 @@ struct FlowHomeView: View {
 
     private func dayTitle(_ day: Date) -> String {
         let f = DateFormatter()
-        f.locale = .current
+        f.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
         f.setLocalizedDateFormatFromTemplate("MMMd")
         let md = f.string(from: day)
         if Calendar.current.isDateInToday(day) { return "\(L10n.today) \(md)" }

@@ -15,6 +15,8 @@ final class LedgerStore: ObservableObject {
     @Published var transactions: [Transaction] = []
     @Published var budgets: [MonthBudget] = []
     @Published var settings: AppSettings = AppSettings()
+    /// Bumped on locale change so SwiftUI rebuilds every screen.
+    @Published var localeEpoch: Int = 0
 
     private let fileURL: URL = {
         let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
@@ -27,7 +29,7 @@ final class LedgerStore: ObservableObject {
             save()
         }
         migrateDefaultLocaleIfNeeded()
-        applyLanguagePreference()
+        applyLocale(settings.languageCode, currencyCode: settings.currencyCode, currencySymbol: settings.currencySymbol, persist: false)
     }
 
     /// One-time switch from the old Chinese default to English + USD.
@@ -41,8 +43,22 @@ final class LedgerStore: ObservableObject {
         save()
     }
 
-    private func applyLanguagePreference() {
-        UserDefaults.standard.set([settings.languageCode], forKey: "AppleLanguages")
+    /// Apply in-app language (+ optional paired currency) and refresh UI immediately.
+    func applyLocale(
+        _ languageCode: String,
+        currencyCode: String? = nil,
+        currencySymbol: String? = nil,
+        persist: Bool = true
+    ) {
+        L10n.languageCode = languageCode
+        var next = settings
+        next.languageCode = languageCode
+        if let currencyCode { next.currencyCode = currencyCode }
+        if let currencySymbol { next.currencySymbol = currencySymbol }
+        settings = next
+        UserDefaults.standard.set([languageCode], forKey: "AppleLanguages")
+        localeEpoch &+= 1
+        if persist { save() }
     }
 
     // MARK: - Persistence
@@ -64,7 +80,41 @@ final class LedgerStore: ObservableObject {
         transactions = snap.transactions
         budgets = snap.budgets
         settings = snap.settings
+        if relabelBuiltIns() { save() }
         return true
+    }
+
+    /// Rewrite labels saved by older builds into stable keys.
+    private func relabelBuiltIns() -> Bool {
+        var changed = false
+        for index in categories.indices {
+            let name = LedgerText.canonical(categories[index].name)
+            let children = categories[index].children.map(LedgerText.canonical)
+            let disabled = categories[index].disabledChildren.map(LedgerText.canonical)
+            if name != categories[index].name || children != categories[index].children || disabled != categories[index].disabledChildren {
+                categories[index].name = name
+                categories[index].children = children
+                categories[index].disabledChildren = disabled
+                changed = true
+            }
+        }
+        for index in accounts.indices {
+            let name = LedgerText.canonical(accounts[index].name)
+            if name != accounts[index].name {
+                accounts[index].name = name
+                changed = true
+            }
+        }
+        for index in transactions.indices {
+            let note = LedgerText.canonical(transactions[index].note)
+            let sub = transactions[index].subcategory.map(LedgerText.canonical)
+            if note != transactions[index].note || sub != transactions[index].subcategory {
+                transactions[index].note = note
+                transactions[index].subcategory = sub
+                changed = true
+            }
+        }
+        return changed
     }
 
     func save() {
@@ -75,25 +125,25 @@ final class LedgerStore: ObservableObject {
     }
 
     func seedDefaults() {
-        let cash = Account(name: "现金", kind: .cash, openingBalance: 0)
+        let cash = Account(name: LedgerText.cashAccount, kind: .cash, openingBalance: 0)
         accounts = [cash]
         categories = [
-            Category(name: "餐饮", type: .expense, isEssential: true, canReduce: true, children: ["外卖", "堂食", "咖啡茶饮"]),
-            Category(name: "交通", type: .expense, isEssential: true, canReduce: true, children: []),
-            Category(name: "购物", type: .expense, isEssential: false, canReduce: true, children: []),
-            Category(name: "居住", type: .expense, isEssential: true, canReduce: false, children: []),
-            Category(name: "日用", type: .expense, isEssential: true, canReduce: true, children: []),
-            Category(name: "通讯", type: .expense, isEssential: true, canReduce: false, children: []),
-            Category(name: "娱乐", type: .expense, isEssential: false, canReduce: true, children: []),
-            Category(name: "医疗", type: .expense, isEssential: true, canReduce: false, children: []),
-            Category(name: "社交", type: .expense, isEssential: false, canReduce: true, children: []),
-            Category(name: "教育", type: .expense, isEssential: true, canReduce: false, children: []),
-            Category(name: "其他", type: .expense, isEssential: false, canReduce: true, children: []),
-            Category(name: "工资", type: .income, children: []),
-            Category(name: "奖金", type: .income, children: []),
-            Category(name: "兼职", type: .income, children: []),
-            Category(name: "红包转账", type: .income, children: []),
-            Category(name: "其他", type: .income, children: [])
+            Category(name: "cat.dining", type: .expense, isEssential: true, canReduce: true, children: ["cat.takeout", "cat.dinein", "cat.coffee"]),
+            Category(name: "cat.transit", type: .expense, isEssential: true, canReduce: true, children: []),
+            Category(name: "cat.shopping", type: .expense, isEssential: false, canReduce: true, children: []),
+            Category(name: "cat.housing", type: .expense, isEssential: true, canReduce: false, children: []),
+            Category(name: "cat.daily", type: .expense, isEssential: true, canReduce: true, children: []),
+            Category(name: "cat.phone", type: .expense, isEssential: true, canReduce: false, children: []),
+            Category(name: "cat.fun", type: .expense, isEssential: false, canReduce: true, children: []),
+            Category(name: "cat.medical", type: .expense, isEssential: true, canReduce: false, children: []),
+            Category(name: "cat.social", type: .expense, isEssential: false, canReduce: true, children: []),
+            Category(name: "cat.education", type: .expense, isEssential: true, canReduce: false, children: []),
+            Category(name: "cat.other", type: .expense, isEssential: false, canReduce: true, children: []),
+            Category(name: "cat.salary", type: .income, children: []),
+            Category(name: "cat.bonus", type: .income, children: []),
+            Category(name: "cat.side", type: .income, children: []),
+            Category(name: "cat.gift", type: .income, children: []),
+            Category(name: "cat.other", type: .income, children: [])
         ]
         transactions = []
         budgets = []
@@ -202,16 +252,15 @@ final class LedgerStore: ObservableObject {
                 let cols = parseCSVLine(line)
                 guard cols.count >= 3, let amount = Double(cols[2]) else { continue }
                 let typeRaw = cols.count > 1 ? cols[1] : "expense"
-                let type: TxType = typeRaw.contains("收") || typeRaw.lowercased() == "income" ? .income
-                    : typeRaw.contains("转") || typeRaw.lowercased() == "transfer" ? .transfer : .expense
-                let note = cols.count > 5 ? cols[5] : (cols.count > 4 ? cols[4] : "")
-                if transactions.contains(where: { $0.note == note && $0.amount == amount && note != "" }) { continue }
+                let type = LedgerText.txType(from: typeRaw)
+                let note = LedgerText.canonical(cols.count > 5 ? cols[5] : (cols.count > 4 ? cols[4] : ""))
+                if transactions.contains(where: { LedgerText.canonical($0.note) == note && $0.amount == amount && note != "" }) { continue }
                 let cash = accounts.first(where: { $0.kind == .cash }) ?? accounts.first
                 guard let cash else { continue }
                 var catId = categories.first(where: { $0.type == type && $0.enabled })?.id
                 if cols.count > 4 {
-                    let catName = cols[4]
-                    if let found = categories.first(where: { $0.name == catName && $0.type == type }) {
+                    let catName = LedgerText.canonical(cols[4])
+                    if let found = categories.first(where: { LedgerText.canonical($0.name) == catName && $0.type == type }) {
                         catId = found.id
                     }
                 }
@@ -291,7 +340,7 @@ final class LedgerStore: ObservableObject {
     }
 
     func clearLocalDataKeepingCash() {
-        let cash = Account(name: "现金", kind: .cash, openingBalance: 0)
+        let cash = Account(name: LedgerText.cashAccount, kind: .cash, openingBalance: 0)
         accounts = [cash]
         transactions = []
         budgets = []
@@ -301,14 +350,13 @@ final class LedgerStore: ObservableObject {
 
     func loadSampleBills() {
         guard let cash = accounts.first(where: { $0.kind == .cash }) ?? accounts.first else { return }
-        let lunchCat = categories.first(where: { $0.name == "餐饮" && $0.type == .expense })
-        let shopCat = categories.first(where: { $0.name == "购物" && $0.type == .expense })
-        let wageCat = categories.first(where: { $0.name == "工资" && $0.type == .income })
-        let lunch = Transaction(type: .expense, amount: 55, accountId: cash.id, categoryId: lunchCat?.id, note: "导入-午饭", date: date(y: 2026, m: 9, d: 3))
-        let ear = Transaction(type: .expense, amount: 199, accountId: cash.id, categoryId: shopCat?.id, note: "导入-耳机壳", date: date(y: 2026, m: 8, d: 28))
-        // Include a current-month row so This Month is not empty after import
-        let todayCoffee = Transaction(type: .expense, amount: 28, accountId: cash.id, categoryId: lunchCat?.id, note: "导入-咖啡", date: Date())
-        let todayWage = Transaction(type: .income, amount: 3000, accountId: cash.id, categoryId: wageCat?.id, note: "导入-工资", date: Date())
+        let lunchCat = categories.first(where: { $0.name == LedgerText.dining && $0.type == .expense })
+        let shopCat = categories.first(where: { $0.name == LedgerText.shopping && $0.type == .expense })
+        let wageCat = categories.first(where: { $0.name == LedgerText.salary && $0.type == .income })
+        let lunch = Transaction(type: .expense, amount: 55, accountId: cash.id, categoryId: lunchCat?.id, note: "sample.lunch", date: date(y: 2026, m: 9, d: 3))
+        let ear = Transaction(type: .expense, amount: 199, accountId: cash.id, categoryId: shopCat?.id, note: "sample.case", date: date(y: 2026, m: 8, d: 28))
+        let todayCoffee = Transaction(type: .expense, amount: 28, accountId: cash.id, categoryId: lunchCat?.id, note: "sample.coffee", date: Date())
+        let todayWage = Transaction(type: .income, amount: 3000, accountId: cash.id, categoryId: wageCat?.id, note: "sample.pay", date: Date())
         for tx in [lunch, ear, todayCoffee, todayWage] where !transactions.contains(where: { $0.note == tx.note && $0.amount == tx.amount }) {
             transactions.append(tx)
         }

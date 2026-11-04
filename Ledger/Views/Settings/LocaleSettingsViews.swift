@@ -11,27 +11,28 @@ struct LanguageSettingsView: View {
     @EnvironmentObject private var store: LedgerStore
 
     var body: some View {
+        let languageCode = store.settings.languageCode
         ScrollView {
             VStack(spacing: 10) {
                 ForEach(AppLocaleCatalog.all) { entry in
                     LedgerSelectCell(
                         title: entry.languageName,
-                        selected: store.settings.languageCode == entry.languageCode
+                        selected: languageCode == entry.languageCode
                     ) {
-                        store.settings.languageCode = entry.languageCode
-                        store.settings.currencyCode = entry.currencyCode
-                        store.settings.currencySymbol = entry.symbol
-                        UserDefaults.standard.set([entry.languageCode], forKey: "AppleLanguages")
-                        UserDefaults.standard.synchronize()
-                        store.save()
+                        store.applyLocale(
+                            entry.languageCode,
+                            currencyCode: entry.currencyCode,
+                            currencySymbol: entry.symbol
+                        )
                     }
                 }
             }
             .padding(16)
         }
         .background(AppTheme.page.ignoresSafeArea())
-        .navigationTitle(L10n.language)
+        .navigationTitle(L10nPack.text("settings.language", language: languageCode))
         .navigationBarTitleDisplayMode(.inline)
+        .id(languageCode)
         .tint(AppTheme.greenDark)
     }
 }
@@ -44,12 +45,11 @@ struct CurrencySettingsView: View {
             VStack(spacing: 10) {
                 ForEach(AppLocaleCatalog.all) { entry in
                     Button {
-                        store.settings.currencySymbol = entry.symbol
-                        store.settings.currencyCode = entry.currencyCode
-                        store.settings.languageCode = entry.languageCode
-                        UserDefaults.standard.set([entry.languageCode], forKey: "AppleLanguages")
-                        UserDefaults.standard.synchronize()
-                        store.save()
+                        store.applyLocale(
+                            entry.languageCode,
+                            currencyCode: entry.currencyCode,
+                            currencySymbol: entry.symbol
+                        )
                     } label: {
                         HStack(spacing: 12) {
                             Text(entry.symbol)

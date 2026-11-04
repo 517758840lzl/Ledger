@@ -20,7 +20,7 @@ struct AccountsSettingsView: View {
 
                 ForEach(store.accounts) { acc in
                     LedgerAccountCell(
-                        title: acc.name,
+                        title: acc.name.ledgerText,
                         subtitle: acc.kind.localizedName,
                         amount: store.symbol(store.balance(for: acc)),
                         onTap: { router.settingsPath.append(SettingsRoute.accountHistory(acc.id)) },
@@ -106,7 +106,8 @@ struct AccountEditorView: View {
 
                 LedgerPrimaryButton(title: L10n.save) {
                     var acc = account ?? Account(name: name, kind: kind, openingBalance: 0)
-                    acc.name = name.isEmpty ? kind.localizedName : name
+                    let fallback = account?.name ?? LedgerText.preset(for: kind)
+                    acc.name = name.isEmpty ? LedgerText.preset(for: kind) : LedgerText.store(name, fallback: fallback)
                     acc.kind = kind
                     acc.openingBalance = Double(opening) ?? 0
                     acc.enabled = enabled
@@ -123,7 +124,7 @@ struct AccountEditorView: View {
         .tint(AppTheme.greenDark)
         .onAppear {
             if let account {
-                name = account.name
+                name = account.name.ledgerText
                 kind = account.kind
                 opening = String(format: "%g", account.openingBalance)
                 enabled = account.enabled
@@ -167,7 +168,7 @@ struct AccountHistoryView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(account.name).font(.title2.bold())
+                        Text(account.name.ledgerText).font(.title2.bold())
                         Text(account.kind.localizedName).foregroundStyle(AppTheme.textSecondary)
                     }
                     Spacer()
@@ -229,6 +230,9 @@ struct AccountHistoryView: View {
     }
 
     private func mediumDate(_ d: Date) -> String {
-        let f = DateFormatter(); f.dateStyle = .medium; return f.string(from: d)
+        let f = DateFormatter()
+        f.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
+        f.dateStyle = .medium
+        return f.string(from: d)
     }
 }

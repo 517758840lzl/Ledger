@@ -13,7 +13,11 @@ struct CalendarFlowView: View {
     @State private var cursor = Date()
     @State private var selected = Date()
 
-    private var cal: Calendar { Calendar.current }
+    private var cal: Calendar {
+        var c = Calendar.current
+        c.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
+        return c
+    }
 
     private var days: [Date?] {
         let start = cal.date(from: cal.dateComponents([.year, .month], from: cursor)) ?? cursor
@@ -191,19 +195,23 @@ struct CalendarFlowView: View {
 
     private var weekdaySymbols: [String] {
         var c = Calendar.current
-        c.locale = .current
+        c.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
         return c.veryShortWeekdaySymbols
     }
 
     private func monthTitle(_ d: Date) -> String {
-        let f = DateFormatter(); f.locale = .current; f.setLocalizedDateFormatFromTemplate("yyyyMMM")
+        let f = DateFormatter()
+        f.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
+        f.setLocalizedDateFormatFromTemplate("yyyyMMM")
         return f.string(from: d)
     }
 
     private func dayTitle(_ d: Date) -> String {
         if cal.isDateInToday(d) { return L10n.today }
         if cal.isDateInYesterday(d) { return L10n.t("flow.yesterday_prefix") }
-        let f = DateFormatter(); f.locale = .current; f.setLocalizedDateFormatFromTemplate("MMMd")
+        let f = DateFormatter()
+        f.locale = AppLocaleCatalog.locale(for: store.settings.languageCode)
+        f.setLocalizedDateFormatFromTemplate("MMMd")
         return f.string(from: d)
     }
 }

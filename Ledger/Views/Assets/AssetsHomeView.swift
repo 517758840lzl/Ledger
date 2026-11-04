@@ -202,7 +202,7 @@ struct AssetsEditorView: View {
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(acc.name).foregroundStyle(AppTheme.textPrimary)
+                                Text(acc.name.ledgerText).foregroundStyle(AppTheme.textPrimary)
                                 Text(acc.kind.localizedName + (acc.manualOnly ? " · " + L10n.manualOnly : ""))
                                     .font(.caption)
                                     .foregroundStyle(AppTheme.textSecondary)
@@ -331,7 +331,8 @@ struct AssetFormView: View {
 
                 LedgerPrimaryButton(title: L10n.save) {
                     var acc = existing ?? Account(name: name, kind: selectedKind, openingBalance: 0)
-                    acc.name = name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? defaultName(for: selectedKind) : name
+                    let fallback = LedgerText.preset(for: selectedKind)
+                    acc.name = LedgerText.store(name, fallback: fallback)
                     acc.kind = selectedKind
                     acc.openingBalance = Double(balance) ?? 0
                     acc.manualOnly = manualOnly
@@ -349,13 +350,13 @@ struct AssetFormView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             selectedKind = existing?.kind ?? kind
-            name = existing?.name ?? defaultName(for: selectedKind)
+            name = existing?.name.ledgerText ?? defaultName(for: selectedKind)
             balance = existing.map { String(format: "%.2f", $0.openingBalance) } ?? ""
             manualOnly = existing?.manualOnly ?? (kind == .stock || kind == .fund)
             includeInNetWorth = existing?.includeInNetWorth ?? true
             if kind == .wechat && existing == nil {
                 selectedKind = .wechat
-                name = "微信"
+                name = defaultName(for: .wechat)
             }
         }
         .onChange(of: selectedKind) { _, new in
@@ -367,15 +368,6 @@ struct AssetFormView: View {
     }
 
     private func defaultName(for k: AccountKind) -> String {
-        switch k {
-        case .bank: return "招商银行"
-        case .wechat: return "微信"
-        case .alipay: return "支付宝"
-        case .stock: return "股票"
-        case .fund: return "基金"
-        case .credit: return "信用卡"
-        case .cash: return "现金"
-        case .other: return "资金来源"
-        }
+        LedgerText.preset(for: k).ledgerText
     }
 }

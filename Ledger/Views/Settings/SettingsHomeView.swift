@@ -13,6 +13,7 @@ struct SettingsHomeView: View {
     @State private var confirmClear = false
 
     var body: some View {
+        let languageCode = store.settings.languageCode
         NavigationStack(path: $router.settingsPath) {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
@@ -46,39 +47,46 @@ struct SettingsHomeView: View {
                 Text(L10n.t("settings.clear_confirm_body"))
             }
             .navigationDestination(for: SettingsRoute.self) { route in
-                switch route {
-                case .accounts:
-                    AccountsSettingsView()
-                case .accountNew:
-                    AccountEditorView(account: nil)
-                case .accountEdit(let id):
-                    AccountEditorView(account: store.accounts.first(where: { $0.id == id }))
-                case .accountHistory(let id):
-                    if let acc = store.accounts.first(where: { $0.id == id }) {
-                        AccountHistoryView(account: acc)
-                    }
-                case .categories:
-                    CategoriesSettingsView()
-                case .categoryAddTop(let type):
-                    CategoryNameEditorView(mode: .top(type))
-                case .categoryAddChild(let id):
-                    if let cat = store.categories.first(where: { $0.id == id }) {
-                        CategoryNameEditorView(mode: .child(cat))
-                    }
-                case .export:
-                    ExportSettingsView()
-                case .importData:
-                    ImportSettingsView()
-                case .language:
-                    LanguageSettingsView()
-                case .currency:
-                    CurrencySettingsView()
-                case .reminder:
-                    ReminderSettingsView()
-                case .about:
-                    AboutSettingsView()
-                }
+                settingsDestination(route)
+                    .id(languageCode)
             }
+        }
+        .id(languageCode)
+    }
+
+    @ViewBuilder
+    private func settingsDestination(_ route: SettingsRoute) -> some View {
+        switch route {
+        case .accounts:
+            AccountsSettingsView()
+        case .accountNew:
+            AccountEditorView(account: nil)
+        case .accountEdit(let id):
+            AccountEditorView(account: store.accounts.first(where: { $0.id == id }))
+        case .accountHistory(let id):
+            if let acc = store.accounts.first(where: { $0.id == id }) {
+                AccountHistoryView(account: acc)
+            }
+        case .categories:
+            CategoriesSettingsView()
+        case .categoryAddTop(let type):
+            CategoryNameEditorView(mode: .top(type))
+        case .categoryAddChild(let id):
+            if let cat = store.categories.first(where: { $0.id == id }) {
+                CategoryNameEditorView(mode: .child(cat))
+            }
+        case .export:
+            ExportSettingsView()
+        case .importData:
+            ImportSettingsView()
+        case .language:
+            LanguageSettingsView()
+        case .currency:
+            CurrencySettingsView()
+        case .reminder:
+            ReminderSettingsView()
+        case .about:
+            AboutSettingsView()
         }
     }
 

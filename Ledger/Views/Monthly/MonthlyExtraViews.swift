@@ -27,7 +27,7 @@ struct MonthlyCategoryDetailView: View {
                 ForEach(rows) { tx in
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text(tx.note.isEmpty ? (category?.name ?? L10n.expense) : tx.note)
+                            Text(tx.note.isEmpty ? (category?.name.ledgerText ?? L10n.expense) : tx.note.ledgerText)
                                 .font(.subheadline.weight(.semibold))
                             Text(tx.date.formatted(date: .abbreviated, time: .omitted))
                                 .font(.caption)
@@ -41,12 +41,12 @@ struct MonthlyCategoryDetailView: View {
                     .listRowBackground(AppTheme.card)
                 }
             } header: {
-                Text(String(format: L10n.t("monthly.category_detail_title"), category?.name ?? "", yearMonth))
+                Text(String(format: L10n.t("monthly.category_detail_title"), category?.name.ledgerText ?? "", yearMonth))
             }
         }
         .scrollContentBackground(.hidden)
         .background(AppTheme.page.ignoresSafeArea())
-        .navigationTitle(category?.name ?? L10n.expense)
+        .navigationTitle(category?.name.ledgerText ?? L10n.expense)
         .navigationBarTitleDisplayMode(.inline)
         .tint(AppTheme.greenDark)
     }
@@ -68,7 +68,7 @@ struct CanReduceSettingsView: View {
                         get: { cat.canReduce },
                         set: { store.setCategoryCanReduce(cat.id, value: $0) }
                     )) {
-                        Text(cat.name)
+                        Text(cat.name.ledgerText)
                     }
                     .tint(AppTheme.green)
                     .listRowBackground(AppTheme.card)

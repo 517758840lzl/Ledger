@@ -51,7 +51,7 @@ struct CategoriesSettingsView: View {
 
     private func categoryCard(_ cat: Category) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text(cat.name)
+            Text(cat.name.ledgerText)
                 .font(.title3.weight(.bold))
                 .foregroundStyle(cat.enabled ? AppTheme.textPrimary : AppTheme.textSecondary)
 
@@ -91,7 +91,7 @@ struct CategoriesSettingsView: View {
                 ForEach(cat.children, id: \.self) { child in
                     let childOn = !cat.disabledChildren.contains(child)
                     HStack {
-                        Text(child)
+                        Text(child.ledgerText)
                             .foregroundStyle(childOn ? AppTheme.textPrimary : AppTheme.textSecondary)
                         Spacer()
                         Button(childOn ? L10n.t("settings.disable") : L10n.t("settings.enable")) {
@@ -145,7 +145,7 @@ struct CategoryNameEditorView: View {
                             Text(L10n.parentCategory)
                                 .font(.caption)
                                 .foregroundStyle(AppTheme.textSecondary)
-                            Text(cat.name)
+                            Text(cat.name.ledgerText)
                                 .font(.body.weight(.semibold))
                                 .foregroundStyle(AppTheme.textPrimary)
                         }
@@ -167,9 +167,9 @@ struct CategoryNameEditorView: View {
                     guard !trimmed.isEmpty else { return }
                     switch mode {
                     case .top(let type):
-                        store.addTopCategory(name: trimmed, type: type)
+                        store.addTopCategory(name: LedgerText.canonical(trimmed), type: type)
                     case .child(let cat):
-                        store.addSubcategory(to: cat.id, name: trimmed)
+                        store.addSubcategory(to: cat.id, name: LedgerText.canonical(trimmed))
                     }
                     dismiss()
                 }

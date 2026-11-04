@@ -104,7 +104,7 @@ struct AssetsSourceCard: View {
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(visual.background))
 
                 HStack(spacing: 8) {
-                    Text(account.name)
+                    Text(account.name.ledgerText)
                         .font(.body.weight(.semibold))
                         .foregroundStyle(AppTheme.textPrimary)
                         .lineLimit(1)
@@ -196,11 +196,11 @@ struct AssetsRecentExpensesBlock: View {
                                 .frame(width: 36, height: 36)
                                 .background(Circle().fill(visual.background))
                             VStack(alignment: .leading, spacing: 2) {
-                                Text(cat?.name ?? L10n.expense)
+                                Text(cat?.name.ledgerText ?? L10n.expense)
                                     .font(.subheadline.weight(.semibold))
                                 // Account · note / no-note
-                                let accName = store.account(id: tx.accountId)?.name ?? ""
-                                let note = tx.note.isEmpty ? L10n.t("flow.no_note") : tx.note
+                                let accName = store.account(id: tx.accountId)?.name.ledgerText ?? ""
+                                let note = tx.note.isEmpty ? L10n.t("flow.no_note") : tx.note.ledgerText
                                 Text("\(accName) · \(note)")
                                     .font(.caption)
                                     .foregroundStyle(AppTheme.textSecondary)

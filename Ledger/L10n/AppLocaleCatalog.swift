@@ -42,4 +42,8 @@ enum AppLocaleCatalog {
     static func entry(languageCode: String) -> Entry? {
         all.first { $0.languageCode == languageCode }
     }
+
+    static func locale(for languageCode: String) -> Locale {
+        Locale(identifier: languageCode.replacingOccurrences(of: "-", with: "_"))
+    }
 }

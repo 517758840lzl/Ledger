@@ -11,6 +11,17 @@ enum RootTab: Hashable {
     case flow, monthly, add, assets, settings
 }
 
+/// Applies the in-app locale and forces a full UI rebuild when language changes.
+struct RootHostView: View {
+    @EnvironmentObject private var store: LedgerStore
+
+    var body: some View {
+        RootTabView()
+            .environment(\.locale, Locale(identifier: store.settings.languageCode))
+            .id(store.settings.languageCode)
+    }
+}
+
 struct RootTabView: View {
     @EnvironmentObject private var store: LedgerStore
     @EnvironmentObject private var router: AppRouter
@@ -37,6 +48,7 @@ struct RootTabView: View {
                 case .settings: SettingsHomeView()
                 }
             }
+            .id(store.settings.languageCode)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(AppTheme.page.ignoresSafeArea())
 

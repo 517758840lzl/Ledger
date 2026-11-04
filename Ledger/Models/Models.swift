@@ -8,10 +8,13 @@
 import Foundation
 
 enum TxType: String, Codable, CaseIterable, Identifiable {
-    case expense = "支出"
-    case income = "收入"
-    case transfer = "转账"
+    case expense, income, transfer
     var id: String { rawValue }
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = LedgerText.txType(from: raw)
+    }
     var localizedName: String {
         switch self {
         case .expense: return L10n.expense
@@ -22,16 +25,14 @@ enum TxType: String, Codable, CaseIterable, Identifiable {
 }
 
 enum AccountKind: String, Codable, CaseIterable, Identifiable {
-    case cash = "现金"
-    case bank = "银行卡"
-    case credit = "信用卡"
-    case wechat = "微信"
-    case alipay = "支付宝"
-    case stock = "股票"
-    case fund = "基金"
-    case other = "其他"
+    case cash, bank, credit, wechat, alipay, stock, fund, other
     var id: String { rawValue }
-    var localizedName: String { L10n.accountKind(rawValue) }
+    var localizedName: String { L10n.accountKind(self) }
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode(String.self)
+        self = LedgerText.kind(fromLegacy: raw) ?? .other
+    }
 }
 
 struct Account: Identifiable, Codable, Hashable {

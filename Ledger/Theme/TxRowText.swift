@@ -11,12 +11,12 @@ import Foundation
 enum TxRowText {
     static func title(tx: Transaction, store: LedgerStore) -> String {
         if tx.type == .transfer {
-            let from = store.account(id: tx.accountId)?.name ?? ""
-            let to = store.account(id: tx.toAccountId ?? UUID())?.name ?? ""
+            let from = store.account(id: tx.accountId)?.name.ledgerText ?? ""
+            let to = store.account(id: tx.toAccountId ?? UUID())?.name.ledgerText ?? ""
             return "\(from) → \(to)"
         }
-        if let sub = tx.subcategory, !sub.isEmpty { return sub }
-        if let cat = store.category(id: tx.categoryId)?.name { return cat }
+        if let sub = tx.subcategory, !sub.isEmpty { return sub.ledgerText }
+        if let cat = store.category(id: tx.categoryId)?.name { return cat.ledgerText }
         return tx.type.localizedName
     }
 
@@ -24,9 +24,9 @@ enum TxRowText {
         if tx.type == .transfer {
             return "\(L10n.transfer) · \(shortDate(tx.date))"
         }
-        let acc = store.account(id: tx.accountId)?.name ?? ""
+        let acc = store.account(id: tx.accountId)?.name.ledgerText ?? ""
         if tx.note.isEmpty { return "\(acc) · \(L10n.t("flow.no_note"))" }
-        return "\(acc) · \(tx.note)"
+        return "\(acc) · \(tx.note.ledgerText)"
     }
 
     private static func shortDate(_ date: Date) -> String {

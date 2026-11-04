@@ -8,9 +8,13 @@
 import Foundation
 
 /// Typed localization keys. Prefer `L10n.xxx` over string literals in UI.
+/// Always resolves against `languageCode` (in-app setting), not the system language.
 enum L10n {
+    /// Updated whenever the user changes language in Settings.
+    nonisolated(unsafe) static var languageCode: String = AppLocaleCatalog.defaultLanguageCode
+
     static func t(_ key: String) -> String {
-        String(localized: String.LocalizationValue(key))
+        L10nPack.text(key, language: languageCode)
     }
 
     // Tabs
@@ -142,17 +146,16 @@ enum L10n {
     static var onboard3Title: String { t("onboard.3.title") }
     static var onboard3Body: String { t("onboard.3.body") }
 
-    // Account kinds
-    static func accountKind(_ raw: String) -> String {
-        switch raw {
-        case "现金": return t("kind.cash")
-        case "银行卡": return t("kind.bank")
-        case "信用卡": return t("kind.credit")
-        case "微信": return t("kind.wechat")
-        case "支付宝": return t("kind.alipay")
-        case "股票": return t("kind.stock")
-        case "基金": return t("kind.fund")
-        default: return t("kind.other")
+    static func accountKind(_ kind: AccountKind) -> String {
+        switch kind {
+        case .cash: return t("kind.cash")
+        case .bank: return t("kind.bank")
+        case .credit: return t("kind.credit")
+        case .wechat: return t("kind.wechat")
+        case .alipay: return t("kind.alipay")
+        case .stock: return t("kind.stock")
+        case .fund: return t("kind.fund")
+        case .other: return t("kind.other")
         }
     }
 }
