@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct AboutSettingsView: View {
-    @EnvironmentObject private var store: LedgerStore
+    /// Marketing version from the shipped bundle, so the About card matches the build.
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""
+    }
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
@@ -27,7 +31,7 @@ struct AboutSettingsView: View {
                     HStack {
                         Text(L10n.t("settings.about_version_label"))
                         Spacer()
-                        Text(L10n.t("settings.about_version_value"))
+                        Text(appVersion)
                     }
                     .font(.subheadline)
                     .foregroundStyle(.white.opacity(0.9))
@@ -64,21 +68,6 @@ struct AboutSettingsView: View {
                     }
                     .padding()
                     .background(RoundedRectangle(cornerRadius: 16).fill(AppTheme.card))
-                }
-
-                Button {
-                    store.settings.hasSeenOnboarding = false
-                    store.save()
-                } label: {
-                    Text(L10n.t("settings.replay_onboarding"))
-                        .font(.headline)
-                        .foregroundStyle(AppTheme.greenDark)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.black.opacity(0.12))
-                        )
                 }
             }
             .padding(16)

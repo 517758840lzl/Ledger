@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "Time to log today's spending.",
         "settings.reminder_preview_title": "Preview",
         "settings.reminder_time": "Time",
-        "settings.replay_onboarding": "Replay onboarding",
         "settings.section_general": "General",
         "settings.section_ledger": "Ledger",
         "settings.title": "Settings",

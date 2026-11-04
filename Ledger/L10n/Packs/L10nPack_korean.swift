@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "오늘 지출을 기록할 시간입니다.",
         "settings.reminder_preview_title": "미리보기",
         "settings.reminder_time": "시간",
-        "settings.replay_onboarding": "안내 다시 보기",
         "settings.section_general": "일반",
         "settings.section_ledger": "장부",
         "settings.title": "설정",

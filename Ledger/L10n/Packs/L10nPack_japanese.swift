@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "今日の支出を記帳する時間です。",
         "settings.reminder_preview_title": "プレビュー",
         "settings.reminder_time": "時刻",
-        "settings.replay_onboarding": "案内をもう一度見る",
         "settings.section_general": "一般",
         "settings.section_ledger": "帳簿",
         "settings.title": "設定",

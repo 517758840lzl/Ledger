@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "Zeit, die Ausgaben von heute zu buchen.",
         "settings.reminder_preview_title": "Vorschau",
         "settings.reminder_time": "Zeit",
-        "settings.replay_onboarding": "Einführung erneut ansehen",
         "settings.section_general": "Allgemein",
         "settings.section_ledger": "Buch",
         "settings.title": "Einstellungen",

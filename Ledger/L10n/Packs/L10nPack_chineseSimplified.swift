@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "该记今天的账了。",
         "settings.reminder_preview_title": "预览",
         "settings.reminder_time": "时间",
-        "settings.replay_onboarding": "重新观看引导",
         "settings.section_general": "通用",
         "settings.section_ledger": "账本管理",
         "settings.title": "设置",

@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "該記今天的賬了。",
         "settings.reminder_preview_title": "預覽",
         "settings.reminder_time": "時間",
-        "settings.replay_onboarding": "重新觀看引導",
         "settings.section_general": "通用",
         "settings.section_ledger": "賬本管理",
         "settings.title": "設定",

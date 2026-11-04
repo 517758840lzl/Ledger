@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "Masa untuk catat perbelanjaan hari ini.",
         "settings.reminder_preview_title": "Pratonton",
         "settings.reminder_time": "Masa",
-        "settings.replay_onboarding": "Main semula pengenalan",
         "settings.section_general": "Umum",
         "settings.section_ledger": "Lejar",
         "settings.title": "Tetapan",

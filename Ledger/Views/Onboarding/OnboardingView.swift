@@ -11,22 +11,71 @@ struct OnboardingView: View {
     var onFinish: () -> Void
     @State private var page = 0
 
-    private var pages: [(title: String, body: String)] {
+    private var pages: [GuidePage] {
         [
-            (L10n.onboard3Title, L10n.onboard3Body),
-            (L10n.onboard2Title, L10n.onboard2Body),
-            (L10n.onboard1Title, L10n.onboard1Body)
+            GuidePage(id: 0, title: L10n.onboard3Title, body: L10n.onboard3Body),
+            GuidePage(id: 1, title: L10n.onboard2Title, body: L10n.onboard2Body),
+            GuidePage(id: 2, title: L10n.onboard1Title, body: L10n.onboard1Body)
         ]
     }
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 0) {
             HStack {
                 Spacer()
-                Button(L10n.onboardSkip) { onFinish() }
-                    .foregroundStyle(AppTheme.textSecondary)
+                Button(action: onFinish) {
+                    Text(L10n.onboardSkip)
+                        .foregroundStyle(AppTheme.textSecondary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 10)
+                }
+                .buttonStyle(.plain)
+                .accessibilityIdentifier("onboard.skip")
             }
-            Spacer()
+            .padding(.top, 4)
+            .padding(.trailing, 8)
+
+            TabView(selection: $page) {
+                ForEach(pages) { item in
+                    guidePage(item)
+                        .tag(item.id)
+                }
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .animation(.easeInOut(duration: 0.35), value: page)
+
+            Button(action: goForward) {
+                Text(page == pages.count - 1 ? L10n.onboardStart : L10n.onboardNext)
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(RoundedRectangle(cornerRadius: 16).fill(AppTheme.greenDark))
+                    .contentShape(RoundedRectangle(cornerRadius: 16))
+            }
+            .buttonStyle(.plain)
+            .accessibilityIdentifier("onboard.next")
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 12)
+        }
+        .background(AppTheme.page.ignoresSafeArea())
+    }
+
+    private func goForward() {
+        guard page < pages.count - 1 else {
+            onFinish()
+            return
+        }
+        withAnimation(.easeInOut(duration: 0.35)) {
+            page += 1
+        }
+    }
+
+    private func guidePage(_ item: GuidePage) -> some View {
+        VStack(spacing: 16) {
+            Spacer(minLength: 0)
             ZStack {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(AppTheme.greenDark)
@@ -38,23 +87,21 @@ struct OnboardingView: View {
             Text("Ledger")
                 .font(.largeTitle.bold())
                 .foregroundStyle(AppTheme.greenDark)
-            Text(pages[page].title)
+            Text(item.title)
                 .font(.title2.bold())
-            Text(pages[page].body)
+                .multilineTextAlignment(.center)
+                .accessibilityIdentifier("onboard.title.\(item.id)")
+            Text(item.body)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(AppTheme.textSecondary)
-                .padding(.horizontal, 28)
-            Spacer()
-            Button(page == pages.count - 1 ? L10n.onboardStart : L10n.onboardNext) {
-                if page < pages.count - 1 { page += 1 } else { onFinish() }
-            }
-            .font(.headline)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(RoundedRectangle(cornerRadius: 16).fill(AppTheme.greenDark))
-            .foregroundStyle(.white)
+            Spacer(minLength: 0)
         }
-        .padding(20)
-        .background(AppTheme.page.ignoresSafeArea())
+        .padding(.horizontal, 28)
     }
+}
+
+private struct GuidePage: Identifiable {
+    let id: Int
+    let title: String
+    let body: String
 }

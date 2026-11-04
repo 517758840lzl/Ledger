@@ -252,7 +252,6 @@ extension L10nPack {
         "settings.reminder_preview_body": "C’est le moment de noter les dépenses d’aujourd’hui.",
         "settings.reminder_preview_title": "Aperçu",
         "settings.reminder_time": "Heure",
-        "settings.replay_onboarding": "Revoir l’introduction",
         "settings.section_general": "Général",
         "settings.section_ledger": "Registre",
         "settings.title": "Réglages",
