@@ -245,11 +245,13 @@ extension AddEntryView {
             }
             HStack(spacing: 8) {
                 keyButton("0")
-                Button(L10n.t("add.add_another")) { save(keepOpen: true) }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.greenMuted))
-                    .foregroundStyle(AppTheme.greenDark)
+                if editing == nil {
+                    Button(L10n.t("add.add_another")) { save(keepOpen: true) }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(RoundedRectangle(cornerRadius: 12).stroke(AppTheme.greenMuted))
+                        .foregroundStyle(AppTheme.greenDark)
+                }
                 Button(L10n.save) { save(keepOpen: false) }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)

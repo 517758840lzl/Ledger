@@ -12,59 +12,100 @@ struct BudgetEditorView: View {
     @Environment(\.dismiss) private var dismiss
     let yearMonth: String
     @State private var totalText = ""
+    @State private var caps: [UUID: String] = [:]
+
+    private var expenseCategories: [Category] {
+        store.categories(for: .expense)
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                Text("\(yearMonth) \(L10n.budget)")
-                    .font(.headline)
-                HStack(alignment: .firstTextBaseline, spacing: 6) {
-                    Text(store.settings.currencySymbol)
-                        .font(.title.weight(.bold))
-                        .foregroundStyle(AppTheme.greenDark)
-                    TextField("0", text: $totalText)
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(L10n.t("monthly.month_total"))
+                        .font(.subheadline)
+                        .foregroundStyle(AppTheme.textSecondary)
+                    TextField(L10n.t("monthly.total_example"), text: $totalText)
                         .keyboardType(.decimalPad)
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
-                        .foregroundStyle(AppTheme.greenDark)
+                        .font(.title3)
+                        .padding(12)
+                        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(AppTheme.page))
                 }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(14)
                 .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppTheme.card))
 
-                Text(L10n.t("monthly.budget_quick"))
+                Text(L10n.categoryBudgetOptional)
                     .font(.subheadline)
                     .foregroundStyle(AppTheme.textSecondary)
-                HStack(spacing: 10) {
-                    ForEach(["500", "1000", "2000", "5000"], id: \.self) { amount in
-                        Button(amount) { totalText = amount }
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 12)
-                            .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(AppTheme.greenSoft))
-                            .foregroundStyle(AppTheme.greenDark)
+
+                VStack(spacing: 0) {
+                    ForEach(expenseCategories) { category in
+                        categoryRow(category)
+                        if category.id != expenseCategories.last?.id {
+                            Divider().padding(.leading, 56)
+                        }
                     }
                 }
-
-                Text(L10n.t("monthly.budget_footer"))
-                    .font(.footnote)
-                    .foregroundStyle(AppTheme.textSecondary)
+                .padding(.vertical, 6)
+                .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppTheme.card))
 
                 LedgerPrimaryButton(title: L10n.save) {
-                    let value = Double(totalText.replacingOccurrences(of: ",", with: "")) ?? 0
-                    guard value > 0 else { return }
-                    var b = store.budgets.first(where: { $0.yearMonth == yearMonth }) ?? MonthBudget(yearMonth: yearMonth)
-                    b.total = value
-                    store.upsertBudget(b)
+                    var budget = store.budgets.first(where: { $0.yearMonth == yearMonth }) ?? MonthBudget(yearMonth: yearMonth)
+                    budget.total = Double(totalText.replacingOccurrences(of: ",", with: "")) ?? 0
+                    var next: [UUID: Double] = [:]
+                    for category in expenseCategories {
+                        let raw = caps[category.id, default: ""].replacingOccurrences(of: ",", with: "")
+                        if let value = Double(raw), value > 0 { next[category.id] = value }
+                    }
+                    budget.categoryCaps = next
+                    store.upsertBudget(budget)
                     dismiss()
                 }
             }
             .padding(16)
+            .padding(.bottom, 24)
         }
+        .scrollDismissesKeyboard(.interactively)
         .background(AppTheme.page.ignoresSafeArea())
-        .navigationTitle(L10n.budget)
+        .navigationTitle("\(yearMonth) \(L10n.budget)")
         .navigationBarTitleDisplayMode(.inline)
         .tint(AppTheme.greenDark)
         .onAppear {
-            totalText = store.budgets.first(where: { $0.yearMonth == yearMonth }).map { String(format: "%g", $0.total) } ?? ""
+            let existing = store.budgets.first(where: { $0.yearMonth == yearMonth })
+            totalText = existing.flatMap { $0.total > 0 ? String(format: "%g", $0.total) : nil } ?? ""
+            var loaded: [UUID: String] = [:]
+            for (id, value) in existing?.categoryCaps ?? [:] where value > 0 {
+                loaded[id] = String(format: "%g", value)
+            }
+            caps = loaded
         }
+    }
+
+    private func categoryRow(_ category: Category) -> some View {
+        let visual = CategoryVisual.style(categoryName: category.name, type: category.type)
+        return HStack(spacing: 12) {
+            Image(systemName: visual.systemImage)
+                .font(.body)
+                .foregroundStyle(visual.foreground)
+                .frame(width: 36, height: 36)
+                .background(Circle().fill(visual.background))
+            VStack(alignment: .leading, spacing: 6) {
+                Text(category.name.ledgerText)
+                    .font(.subheadline.weight(.semibold))
+                TextField(L10n.t("monthly.cap_empty"), text: binding(for: category.id))
+                    .keyboardType(.decimalPad)
+                    .padding(10)
+                    .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(AppTheme.page))
+            }
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+    }
+
+    private func binding(for id: UUID) -> Binding<String> {
+        Binding(
+            get: { caps[id, default: ""] },
+            set: { caps[id] = $0 }
+        )
     }
 }

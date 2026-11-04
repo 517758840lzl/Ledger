@@ -240,6 +240,24 @@ final class LedgerStore: ObservableObject {
             .sorted { $0.date > $1.date }
     }
 
+    /// Flow lists: income, then expense, then transfer; older rows first inside a type.
+    func listed(_ items: [Transaction]) -> [Transaction] {
+        items.sorted { a, b in
+            let left = listRank(a.type)
+            let right = listRank(b.type)
+            if left != right { return left < right }
+            return a.date < b.date
+        }
+    }
+
+    private func listRank(_ type: TxType) -> Int {
+        switch type {
+        case .income: return 0
+        case .expense: return 1
+        case .transfer: return 2
+        }
+    }
+
     /// Parse app-exported CSV (sectioned or flat transaction table)
     @discardableResult
     func importCSV(text: String) -> Int {

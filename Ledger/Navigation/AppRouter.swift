@@ -84,4 +84,15 @@ final class AppRouter: ObservableObject {
 
     /// Optional preset date from the calendar empty-day CTA
     var pendingPresetDate: Date?
+
+    /// Centered confirm shown above the tab bar.
+    @Published var pendingConfirm: PendingConfirm?
+}
+
+struct PendingConfirm {
+    var title: String
+    var message: String = ""
+    var confirmTitle: String
+    var destructive: Bool = true
+    var run: () -> Void
 }

@@ -18,7 +18,7 @@ struct MonthlyCategoryDetailView: View {
     private var rows: [Transaction] {
         store.transactions(in: yearMonth, type: .expense)
             .filter { $0.categoryId == categoryId }
-            .sorted { $0.date > $1.date }
+            .sorted { $0.date < $1.date }
     }
 
     var body: some View {

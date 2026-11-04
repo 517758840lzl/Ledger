@@ -16,7 +16,7 @@ struct FlowHomeView: View {
     private var ym: String { store.yearMonth() }
 
     private var filtered: [Transaction] {
-        store.transactions(in: ym, type: filter)
+        let matched = store.transactions(in: ym, type: filter)
             .filter { tx in
                 guard !query.isEmpty else { return true }
                 let cat = store.category(id: tx.categoryId)?.name.ledgerText ?? ""
@@ -29,7 +29,7 @@ struct FlowHomeView: View {
                     || note.localizedCaseInsensitiveContains(query)
                     || sub.localizedCaseInsensitiveContains(query)
             }
-            .sorted { $0.date > $1.date }
+        return store.listed(matched)
     }
 
     var body: some View {
@@ -68,6 +68,16 @@ struct FlowHomeView: View {
                         emptyState
                     } else {
                         daySections
+                        Button {
+                            router.flowPath.append(FlowRoute.history)
+                        } label: {
+                            Text(L10n.t("flow.see_earlier"))
+                                .font(.subheadline)
+                                .foregroundStyle(AppTheme.textSecondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 16)

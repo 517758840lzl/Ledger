@@ -112,25 +112,44 @@ struct AddEntryView: View {
             }
             .presentationDetents([.medium, .large])
         }
-        .confirmationDialog(L10n.discardTitle, isPresented: $confirmDiscard, titleVisibility: .visible) {
-            Button(L10n.keepEditing, role: .cancel) {}
-            Button(L10n.discard, role: .destructive) { router.popFlow() }
-        } message: {
-            Text(L10n.discardMessage)
+        .onChange(of: confirmDiscard) { _, show in
+            guard show else { return }
+            confirmDiscard = false
+            router.pendingConfirm = PendingConfirm(
+                title: L10n.discardTitle,
+                message: L10n.discardMessage,
+                confirmTitle: L10n.discard,
+                run: { router.popFlow() }
+            )
         }
-        .confirmationDialog(L10n.t("add.delete_confirm"), isPresented: $confirmDelete, titleVisibility: .visible) {
-            Button(L10n.cancel, role: .cancel) {}
-            Button(L10n.t("common.delete"), role: .destructive) {
-                if let id = editing?.id {
-                    store.deleteTransaction(id)
+        .onChange(of: confirmDelete) { _, show in
+            guard show else { return }
+            confirmDelete = false
+            router.pendingConfirm = PendingConfirm(
+                title: L10n.t("add.delete_confirm"),
+                confirmTitle: L10n.t("common.delete"),
+                run: {
+                    if let id = editing?.id {
+                        store.deleteTransaction(id)
+                    }
+                    router.popFlow()
                 }
-                router.popFlow()
-            }
+            )
         }
     }
 
     var dirty: Bool {
-        amountValue > 0 || !note.isEmpty || editing != nil
+        guard let editing else {
+            return amountValue > 0 || !note.isEmpty
+        }
+        return type != editing.type
+            || amountValue != editing.amount
+            || note != editing.note
+            || accountId != editing.accountId
+            || toAccountId != editing.toAccountId
+            || categoryId != editing.categoryId
+            || subcategory != editing.subcategory
+            || !Calendar.current.isDate(date, inSameDayAs: editing.date)
     }
 
     var amountValue: Double { Double(amountText) ?? 0 }

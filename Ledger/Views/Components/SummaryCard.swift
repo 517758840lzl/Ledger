@@ -13,21 +13,25 @@ struct SummaryCard: View {
     /// Balance card footer: vs last month
     var vsLastMonth: String? = nil
 
+    private var balance: Double { store.monthBalance(yearMonth) }
+    private var expense: Double { store.monthExpense(yearMonth) }
+    private var income: Double { store.monthIncome(yearMonth) }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text("\(yearMonth) \(L10n.t("summary.balance"))")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(AppTheme.greenMuted)
-            Text(store.symbol(store.monthBalance(yearMonth)))
+            Text(store.symbol(abs(balance)))
                 .font(.system(size: 36, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+                .foregroundStyle(vsLastMonth != nil && balance < 0 ? AppTheme.shortfallOnCard : .white)
             Divider().overlay(Color.white.opacity(0.2))
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(L10n.expense.uppercased())
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.white.opacity(0.7))
-                    Text(store.symbol(store.monthExpense(yearMonth)))
+                    Text(store.symbol(expense))
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(.white)
                 }
@@ -36,22 +40,29 @@ struct SummaryCard: View {
                     Text(L10n.income.uppercased())
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(AppTheme.incomeOnCard.opacity(0.85))
-                    Text(store.symbol(store.monthIncome(yearMonth)))
+                    Text(store.symbol(income))
                         .font(.system(size: 18, weight: .semibold))
                         .foregroundStyle(AppTheme.incomeOnCard)
                 }
                 Spacer()
             }
             if let vsLastMonth {
-                HStack {
-                    Text(L10n.t("monthly.vs_last"))
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.72))
-                    Spacer()
-                    Text(vsLastMonth)
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.white.opacity(0.9))
+                VStack(spacing: 6) {
+                    if expense != income {
+                        HStack {
+                            Text(expense > income ? L10n.t("summary.spend_more") : L10n.t("summary.income_more"))
+                            Spacer()
+                            Text(store.symbol(abs(expense - income)))
+                        }
+                    }
+                    HStack {
+                        Text(L10n.t("monthly.vs_last"))
+                        Spacer()
+                        Text(vsLastMonth).fontWeight(.semibold)
+                    }
                 }
+                .font(.caption)
+                .foregroundStyle(.white.opacity(0.9))
                 .padding(.top, 2)
             }
         }

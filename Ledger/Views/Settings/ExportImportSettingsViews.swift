@@ -76,6 +76,7 @@ struct ExportSettingsView: View {
 
 struct ImportSettingsView: View {
     @EnvironmentObject private var store: LedgerStore
+    @EnvironmentObject private var router: AppRouter
     @State private var pendingConfirm = false
     @State private var showPicker = false
     @State private var importMessage = ""
@@ -126,11 +127,16 @@ struct ImportSettingsView: View {
         .navigationTitle(L10n.t("settings.import"))
         .navigationBarTitleDisplayMode(.inline)
         .tint(AppTheme.greenDark)
-        .confirmationDialog(L10n.importConfirm, isPresented: $pendingConfirm, titleVisibility: .visible) {
-            Button(L10n.confirm) { store.loadSampleBills() }
-            Button(L10n.cancel, role: .cancel) {}
-        } message: {
-            Text(L10n.t("settings.import_sample_detail"))
+        .onChange(of: pendingConfirm) { _, show in
+            guard show else { return }
+            pendingConfirm = false
+            router.pendingConfirm = PendingConfirm(
+                title: L10n.importConfirm,
+                message: L10n.t("settings.import_sample_detail"),
+                confirmTitle: L10n.confirm,
+                destructive: false,
+                run: { store.loadSampleBills() }
+            )
         }
         .fileImporter(isPresented: $showPicker, allowedContentTypes: [.commaSeparatedText, .plainText, .html]) { result in
             switch result {

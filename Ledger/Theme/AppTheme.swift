@@ -14,6 +14,8 @@ enum AppTheme {
     static let greenMuted = Color(red: 0.55, green: 0.72, blue: 0.45)
     /// Income amount on the balance card (bright lime, never near-white)
     static let incomeOnCard = Color(red: 0.72, green: 1.0, blue: 0.42)
+    /// Monthly card amount when spending exceeds income
+    static let shortfallOnCard = Color(red: 0.98, green: 0.67, blue: 0.64)
     /// Income amount green in lists
     static let incomeAmount = Color(red: 0.22, green: 0.58, blue: 0.28)
     static let page = Color(red: 0.96, green: 0.96, blue: 0.95)

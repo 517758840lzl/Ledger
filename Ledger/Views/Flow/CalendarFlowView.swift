@@ -35,15 +35,13 @@ struct CalendarFlowView: View {
     }
 
     private var dayRows: [Transaction] {
-        store.transactions
-            .filter { cal.isDate($0.date, inSameDayAs: selected) }
-            .sorted { $0.date > $1.date }
+        store.listed(store.transactions.filter { cal.isDate($0.date, inSameDayAs: selected) })
     }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // Month switcher + day grid only (no balance card)
+                SummaryCard(yearMonth: store.yearMonth(for: cursor))
                 HStack {
                     Button {
                         cursor = cal.date(byAdding: .month, value: -1, to: cursor) ?? cursor

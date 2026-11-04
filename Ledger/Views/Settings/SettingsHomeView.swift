@@ -10,8 +10,6 @@ import SwiftUI
 struct SettingsHomeView: View {
     @EnvironmentObject private var store: LedgerStore
     @EnvironmentObject private var router: AppRouter
-    @State private var confirmClear = false
-
     var body: some View {
         let languageCode = store.settings.languageCode
         NavigationStack(path: $router.settingsPath) {
@@ -22,7 +20,14 @@ struct SettingsHomeView: View {
                         settingsPush(L10n.categories, icon: "square.grid.3x3.fill", tint: Color(red: 0.72, green: 0.55, blue: 0.28), route: .categories)
                         settingsPush(L10n.export, icon: "arrow.down.to.line", tint: Color(red: 0.25, green: 0.45, blue: 0.85), route: .export)
                         settingsPush(L10n.t("settings.import"), icon: "arrow.up.to.line", tint: Color(red: 0.20, green: 0.65, blue: 0.70), route: .importData)
-                        Button { confirmClear = true } label: {
+                        Button {
+                            router.pendingConfirm = PendingConfirm(
+                                title: L10n.t("settings.clear_confirm_title"),
+                                message: L10n.t("settings.clear_confirm_body"),
+                                confirmTitle: L10n.t("settings.clear_action"),
+                                run: { store.clearLocalDataKeepingCash() }
+                            )
+                        } label: {
                             settingsRow(L10n.clearLocal, icon: "trash.fill", tint: Color(red: 0.85, green: 0.25, blue: 0.25), destructive: true)
                         }
                     }
@@ -40,12 +45,6 @@ struct SettingsHomeView: View {
             .background(AppTheme.page.ignoresSafeArea())
             .navigationTitle(L10n.settingsTitle)
             .tint(AppTheme.greenDark)
-            .confirmationDialog(L10n.t("settings.clear_confirm_title"), isPresented: $confirmClear, titleVisibility: .visible) {
-                Button(L10n.cancel, role: .cancel) {}
-                Button(L10n.t("settings.clear_action"), role: .destructive) { store.clearLocalDataKeepingCash() }
-            } message: {
-                Text(L10n.t("settings.clear_confirm_body"))
-            }
             .navigationDestination(for: SettingsRoute.self) { route in
                 settingsDestination(route)
                     .id(languageCode)

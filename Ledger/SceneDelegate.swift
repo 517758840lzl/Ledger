@@ -21,6 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             .tint(AppTheme.greenDark)
         let window = UIWindow(windowScene: windowScene)
         let host = UIHostingController(rootView: root)
+        // Default hosting insets the whole tree for the keyboard, which lifts the tab bar.
+        host.safeAreaRegions.remove(.keyboard)
         host.view.tintColor = UIColor(AppTheme.greenDark)
         window.tintColor = UIColor(AppTheme.greenDark)
         window.rootViewController = host

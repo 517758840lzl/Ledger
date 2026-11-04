@@ -118,7 +118,7 @@ struct AssetsSourceCard: View {
                                 Capsule().fill(account.manualOnly ? Color.black.opacity(0.06) : AppTheme.greenSoft)
                             )
                     }
-                    Text(store.symbol(store.balance(for: account)))
+                    Text(store.symbol(abs(store.balance(for: account))))
                         .font(.body.weight(.bold))
                         .foregroundStyle(AppTheme.textPrimary)
                 }

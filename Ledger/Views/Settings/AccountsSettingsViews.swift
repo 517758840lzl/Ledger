@@ -22,7 +22,7 @@ struct AccountsSettingsView: View {
                     LedgerAccountCell(
                         title: acc.name.ledgerText,
                         subtitle: acc.kind.localizedName,
-                        amount: store.symbol(store.balance(for: acc)),
+                        amount: store.symbol(abs(store.balance(for: acc))),
                         onTap: { router.settingsPath.append(SettingsRoute.accountHistory(acc.id)) },
                         onEdit: { router.settingsPath.append(SettingsRoute.accountEdit(acc.id)) }
                     )
@@ -172,7 +172,7 @@ struct AccountHistoryView: View {
                         Text(account.kind.localizedName).foregroundStyle(AppTheme.textSecondary)
                     }
                     Spacer()
-                    Text(store.symbol(store.balance(for: account)))
+                    Text(store.symbol(abs(store.balance(for: account))))
                         .font(.title3.bold())
                 }
                 .padding()

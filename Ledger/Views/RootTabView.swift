@@ -57,8 +57,26 @@ struct RootTabView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        // Keyboard must cover the bar. Letting the safe area shrink lifts the bar onto the keyboard.
+        .ignoresSafeArea(.keyboard, edges: .bottom)
         .animation(.easeInOut(duration: 0.2), value: showsTabBar)
         .tint(AppTheme.greenDark)
+        .overlay {
+            if let pending = router.pendingConfirm {
+                LedgerConfirmCard(
+                    title: pending.title,
+                    message: pending.message,
+                    confirmTitle: pending.confirmTitle,
+                    destructive: pending.destructive,
+                    onCancel: { router.pendingConfirm = nil },
+                    onConfirm: {
+                        let run = pending.run
+                        router.pendingConfirm = nil
+                        run()
+                    }
+                )
+            }
+        }
         .fullScreenCover(isPresented: Binding(
             get: { !store.settings.hasSeenOnboarding },
             set: { if !$0 { store.settings.hasSeenOnboarding = true; store.save() } }
