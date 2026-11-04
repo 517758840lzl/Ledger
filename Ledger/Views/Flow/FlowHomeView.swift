@@ -86,6 +86,7 @@ struct FlowHomeView: View {
             .scrollDismissesKeyboard(.interactively)
             .background(AppTheme.page)
             .navigationTitle(L10n.flowTitle)
+            .navigationBarTitleDisplayMode(.inline)
             .tint(AppTheme.greenDark)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

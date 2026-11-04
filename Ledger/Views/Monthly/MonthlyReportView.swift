@@ -84,6 +84,7 @@ struct MonthlyReportView: View {
             }
             .background(AppTheme.page.ignoresSafeArea())
             .navigationTitle(L10n.monthlyTitle)
+            .navigationBarTitleDisplayMode(.inline)
             .tint(AppTheme.greenDark)
             .navigationDestination(for: MonthlyRoute.self) { route in
                 switch route {

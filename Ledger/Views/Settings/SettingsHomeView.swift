@@ -44,6 +44,7 @@ struct SettingsHomeView: View {
             }
             .background(AppTheme.page.ignoresSafeArea())
             .navigationTitle(L10n.settingsTitle)
+            .navigationBarTitleDisplayMode(.inline)
             .tint(AppTheme.greenDark)
             .navigationDestination(for: SettingsRoute.self) { route in
                 settingsDestination(route)

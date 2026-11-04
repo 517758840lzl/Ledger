@@ -29,6 +29,7 @@ struct AssetsHomeView: View {
             }
             .background(AppTheme.page.ignoresSafeArea())
             .navigationTitle(configured ? L10n.assetsTitle : L10n.assetsStats)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 if configured {
                     ToolbarItem(placement: .topBarTrailing) {
