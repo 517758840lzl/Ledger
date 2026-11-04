@@ -167,9 +167,9 @@ struct CategoryNameEditorView: View {
                     guard !trimmed.isEmpty else { return }
                     switch mode {
                     case .top(let type):
-                        store.addTopCategory(name: LedgerText.canonical(trimmed), type: type)
+                        store.addTopCategory(name: trimmed, type: type)
                     case .child(let cat):
-                        store.addSubcategory(to: cat.id, name: LedgerText.canonical(trimmed))
+                        store.addSubcategory(to: cat.id, name: trimmed)
                     }
                     dismiss()
                 }

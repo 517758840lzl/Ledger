@@ -80,41 +80,7 @@ final class LedgerStore: ObservableObject {
         transactions = snap.transactions
         budgets = snap.budgets
         settings = snap.settings
-        if relabelBuiltIns() { save() }
         return true
-    }
-
-    /// Rewrite labels saved by older builds into stable keys.
-    private func relabelBuiltIns() -> Bool {
-        var changed = false
-        for index in categories.indices {
-            let name = LedgerText.canonical(categories[index].name)
-            let children = categories[index].children.map(LedgerText.canonical)
-            let disabled = categories[index].disabledChildren.map(LedgerText.canonical)
-            if name != categories[index].name || children != categories[index].children || disabled != categories[index].disabledChildren {
-                categories[index].name = name
-                categories[index].children = children
-                categories[index].disabledChildren = disabled
-                changed = true
-            }
-        }
-        for index in accounts.indices {
-            let name = LedgerText.canonical(accounts[index].name)
-            if name != accounts[index].name {
-                accounts[index].name = name
-                changed = true
-            }
-        }
-        for index in transactions.indices {
-            let note = LedgerText.canonical(transactions[index].note)
-            let sub = transactions[index].subcategory.map(LedgerText.canonical)
-            if note != transactions[index].note || sub != transactions[index].subcategory {
-                transactions[index].note = note
-                transactions[index].subcategory = sub
-                changed = true
-            }
-        }
-        return changed
     }
 
     func save() {
@@ -271,8 +237,9 @@ final class LedgerStore: ObservableObject {
                 guard cols.count >= 3, let amount = Double(cols[2]) else { continue }
                 let typeRaw = cols.count > 1 ? cols[1] : "expense"
                 let type = LedgerText.txType(from: typeRaw)
-                let note = LedgerText.canonical(cols.count > 5 ? cols[5] : (cols.count > 4 ? cols[4] : ""))
-                if transactions.contains(where: { LedgerText.canonical($0.note) == note && $0.amount == amount && note != "" }) { continue }
+                let note = (cols.count > 5 ? cols[5] : (cols.count > 4 ? cols[4] : ""))
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                if note != "" && transactions.contains(where: { $0.amount == amount && ($0.note == note || $0.note.ledgerText == note) }) { continue }
                 let cash = accounts.first(where: { $0.kind == .cash }) ?? accounts.first
                 guard let cash else { continue }
                 var catId = categories.first(where: { $0.type == type && $0.enabled })?.id

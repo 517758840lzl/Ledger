@@ -15,9 +15,9 @@ enum LedgerText {
     static let salary = "cat.salary"
 
     static func show(_ stored: String) -> String {
-        let key = canonical(stored)
-        let value = L10n.t(key)
-        return value == key ? stored : value
+        guard namePrefixes.contains(where: { stored.hasPrefix($0) }) else { return stored }
+        let value = L10n.t(stored)
+        return value == stored ? stored : value
     }
 
     /// Map an older stored label onto its key. Unknown text is returned unchanged.
@@ -38,12 +38,12 @@ enum LedgerText {
         }
     }
 
-    /// Keep a preset key when the field still shows that preset's current translation.
+    /// Keep a preset key only when the field is still that preset. Anything the user typed is stored as typed.
     static func store(_ typed: String, fallback: String) -> String {
         let trimmed = typed.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty { return fallback }
         if trimmed == show(fallback) { return fallback }
-        return canonical(trimmed)
+        return trimmed
     }
 
     static func isTranslation(_ typed: String, of key: String) -> Bool {

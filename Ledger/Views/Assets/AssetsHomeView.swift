@@ -10,6 +10,8 @@ import SwiftUI
 struct AssetsHomeView: View {
     @EnvironmentObject private var store: LedgerStore
     @EnvironmentObject private var router: AppRouter
+    /// Flips only after the setup stack is gone. Swapping the root while a page is pushed leaves a blank screen.
+    @State private var showFilledHome = UserDefaults.standard.bool(forKey: "ledger.assetsConfigured")
 
     private var configured: Bool {
         // Onboarding stays until assets are saved from the assets form
@@ -21,17 +23,19 @@ struct AssetsHomeView: View {
     var body: some View {
         NavigationStack(path: $router.assetsPath) {
             Group {
-                if configured {
+                if showFilledHome {
                     assetsList
                 } else {
                     onboarding
                 }
             }
             .background(AppTheme.page.ignoresSafeArea())
-            .navigationTitle(configured ? L10n.assetsTitle : L10n.assetsStats)
+            .navigationTitle(showFilledHome ? L10n.assetsTitle : L10n.assetsStats)
             .navigationBarTitleDisplayMode(.inline)
+            .onAppear(perform: revealFilledHomeIfReady)
+            .onChange(of: router.assetsPath.count) { _, _ in revealFilledHomeIfReady() }
             .toolbar {
-                if configured {
+                if showFilledHome {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             router.assetsPath.append(AssetsRoute.editor)
@@ -136,6 +140,12 @@ struct AssetsHomeView: View {
             }
             .padding(16)
             .padding(.bottom, 110)
+        }
+    }
+
+    private func revealFilledHomeIfReady() {
+        if configured && router.assetsPath.isEmpty {
+            showFilledHome = true
         }
     }
 
@@ -247,7 +257,7 @@ struct AssetsEditorView: View {
                     store.settings.savingsGoal = Double(goalText.replacingOccurrences(of: ",", with: "")) ?? 0
                     store.save()
                     UserDefaults.standard.set(true, forKey: "ledger.assetsConfigured")
-                    router.popAssets()
+                    router.assetsPath = NavigationPath()
                 }
                 .fontWeight(.semibold)
                 .foregroundStyle(AppTheme.greenDark)
@@ -339,7 +349,6 @@ struct AssetFormView: View {
                     acc.manualOnly = manualOnly
                     acc.includeInNetWorth = includeInNetWorth
                     store.upsertAccount(acc)
-                    UserDefaults.standard.set(true, forKey: "ledger.assetsConfigured")
                     router.popAssets()
                 }
             }
