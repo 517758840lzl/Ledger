@@ -37,7 +37,7 @@ struct AccountsSettingsView: View {
 
 struct AccountEditorView: View {
     @EnvironmentObject private var store: LedgerStore
-    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var router: AppRouter
     let account: Account?
     @State private var name = ""
     @State private var kind: AccountKind = .other
@@ -104,7 +104,7 @@ struct AccountEditorView: View {
                     acc.openingBalance = Double(opening) ?? 0
                     acc.enabled = enabled
                     store.upsertAccount(acc)
-                    dismiss()
+                    router.popSettings()
                 }
             }
             .padding(16)
@@ -180,10 +180,12 @@ struct AccountHistoryView: View {
                         ForEach(Array(rows.enumerated()), id: \.element.id) { index, tx in
                             let cat = store.category(id: tx.categoryId)?.name
                             let visual = CategoryVisual.style(categoryName: cat, type: tx.type)
-                            let title = (tx.subcategory?.isEmpty == false ? tx.subcategory! : (cat ?? tx.type.localizedName))
+                            let title = TxRowText.title(tx: tx, store: store)
                             LedgerTxnCell(
                                 title: title,
-                                subtitle: tx.note.isEmpty ? mediumDate(tx.date) : tx.note,
+                                subtitle: tx.type == .transfer
+                                    ? TxRowText.subtitle(tx: tx, store: store)
+                                    : (tx.note.isEmpty ? mediumDate(tx.date) : tx.note),
                                 amount: amountText(tx),
                                 amountColor: tx.type == .income ? AppTheme.incomeAmount : AppTheme.textPrimary,
                                 iconSystemImage: visual.systemImage,

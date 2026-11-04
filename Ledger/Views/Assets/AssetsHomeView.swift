@@ -5,9 +5,10 @@ struct AssetsHomeView: View {
     @EnvironmentObject private var router: AppRouter
 
     private var configured: Bool {
-        store.accounts.contains { $0.kind != .cash }
-            || store.accounts.contains { $0.openingBalance != 0 }
-            || !store.transactions.isEmpty
+        // 对标 Android：流水 / 设置里加记账账户不会结束「家底」引导；
+        // 只有资产表单保存过（或写入余额 / 手动更新）才进入净资产看板。
+        UserDefaults.standard.bool(forKey: "ledger.assetsConfigured")
+            || store.accounts.contains { $0.openingBalance != 0 || $0.manualOnly }
     }
 
     var body: some View {
@@ -328,6 +329,7 @@ struct AssetFormView: View {
                     acc.manualOnly = manualOnly
                     acc.includeInNetWorth = includeInNetWorth
                     store.upsertAccount(acc)
+                    UserDefaults.standard.set(true, forKey: "ledger.assetsConfigured")
                     dismiss()
                 }
             }

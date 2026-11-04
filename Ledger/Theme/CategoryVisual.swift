@@ -14,10 +14,11 @@ enum CategoryVisual {
         case .income:
             return incomeStyle(name)
         case .transfer:
+            // 对标 Android：浅蓝底 + 双向箭头
             return Style(
                 systemImage: "arrow.left.arrow.right",
-                foreground: AppTheme.greenDark,
-                background: AppTheme.greenSoft
+                foreground: Color(red: 0.20, green: 0.45, blue: 0.85),
+                background: Color(red: 0.86, green: 0.91, blue: 1.0)
             )
         case .expense:
             return expenseStyle(name)

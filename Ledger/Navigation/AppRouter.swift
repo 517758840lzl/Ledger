@@ -65,6 +65,11 @@ final class AppRouter: ObservableObject {
         flowPath.removeLast()
     }
 
+    func popSettings() {
+        guard !settingsPath.isEmpty else { return }
+        settingsPath.removeLast()
+    }
+
     /// 记一笔可选预填日期（日历空日 CTA）
     var pendingPresetDate: Date?
 }

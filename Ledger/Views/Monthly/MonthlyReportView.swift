@@ -48,8 +48,8 @@ struct MonthlyReportView: View {
         }
         let prevYm = store.yearMonth(for: prev)
         let prevExp = store.monthExpense(prevYm)
-        if prevExp == 0 && expense == 0 { return L10n.t("monthly.flat") }
-        if prevExp == 0 { return L10n.t("monthly.up") }
+        // 对标 Android：上月支出为 0（无基线）一律「持平」，不显示上升/下降
+        if prevExp == 0 { return L10n.t("monthly.flat") }
         let delta = (expense - prevExp) / prevExp
         if abs(delta) < 0.02 { return L10n.t("monthly.flat") }
         return delta > 0 ? L10n.t("monthly.up") : L10n.t("monthly.down")
@@ -131,10 +131,15 @@ struct MonthlyReportView: View {
                     router.monthlyPath.append(MonthlyRoute.budget(ym))
                 }
                 .font(.headline)
-                .foregroundStyle(AppTheme.greenDark)
+                .foregroundStyle(AppTheme.textPrimary)
                 .frame(maxWidth: .infinity)
                 .padding()
-                .background(Capsule().stroke(AppTheme.greenDark.opacity(0.75), lineWidth: 1.5))
+                // 对标 Android：白底 + 深灰描边，不是绿色描边
+                .background(
+                    Capsule()
+                        .fill(AppTheme.card)
+                        .overlay(Capsule().stroke(Color.black.opacity(0.18), lineWidth: 1))
+                )
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -239,7 +244,8 @@ struct MonthlyReportView: View {
             } else {
                 ForEach(rows, id: \.0.id) { item in
                     let pct = expense > 0 ? Int((item.1 / expense) * 100) : 0
-                    let save = (item.1 * 0.2).rounded(.towardZero)
+                    // 对标 Android：88×20%→18（四舍五入），不是 towardZero→17
+                    let save = (item.1 * 0.2).rounded()
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
                             Text(item.0.name)

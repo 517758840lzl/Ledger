@@ -51,12 +51,8 @@ struct FlowHomeView: View {
                     .padding(12)
                     .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(AppTheme.card))
 
-                    HStack(spacing: 8) {
-                        chip(L10n.t("flow.this_month"), selected: filter == nil) { filter = nil }
-                        chip(L10n.expense, selected: filter == .expense) { filter = .expense }
-                        chip(L10n.income, selected: filter == .income) { filter = .income }
-                        chip(L10n.transfer, selected: filter == .transfer) { filter = .transfer }
-                    }
+                    // 对标 Android：整条浅灰胶囊 + 等宽四段，选中白底滑块
+                    filterSegmentedBar
 
                     if filtered.isEmpty {
                         emptyState
@@ -162,18 +158,8 @@ struct FlowHomeView: View {
 
     private func txnRow(_ tx: Transaction) -> some View {
         let catName = store.category(id: tx.categoryId)?.name
-        let titleBase = catName
-            ?? (tx.type == .transfer ? L10n.transfer : L10n.t("flow.uncategorized"))
-        // Android 有子类时标题常直接用子类名（如 Delivery）
-        let title: String = {
-            if let sub = tx.subcategory, !sub.isEmpty { return sub }
-            return titleBase
-        }()
-        let subtitle: String = {
-            let acc = store.account(id: tx.accountId)?.name ?? ""
-            if tx.note.isEmpty { return "\(acc) · \(L10n.t("flow.no_note"))" }
-            return "\(acc) · \(tx.note)"
-        }()
+        let title = TxRowText.title(tx: tx, store: store)
+        let subtitle = TxRowText.subtitle(tx: tx, store: store)
         let visual = CategoryVisual.style(categoryName: catName ?? title, type: tx.type)
         return LedgerTxnCell(
             title: title,
@@ -200,15 +186,34 @@ struct FlowHomeView: View {
         return "\(sign)\(store.symbol(tx.amount))"
     }
 
-    private func chip(_ title: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Text(title)
-                .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(Capsule().fill(selected ? Color.white : Color.clear))
-                .foregroundStyle(selected ? AppTheme.greenDark : AppTheme.textSecondary)
+    private var filterSegmentedBar: some View {
+        let items: [(String, TxType?)] = [
+            (L10n.t("flow.this_month"), nil),
+            (L10n.expense, .expense),
+            (L10n.income, .income),
+            (L10n.transfer, .transfer),
+        ]
+        return HStack(spacing: 0) {
+            ForEach(items, id: \.0) { title, value in
+                let on = filter == value
+                Button {
+                    filter = value
+                } label: {
+                    Text(title)
+                        .font(.subheadline.weight(on ? .semibold : .medium))
+                        .foregroundStyle(on ? AppTheme.greenDark : AppTheme.textSecondary)
+                        .frame(maxWidth: .infinity, minHeight: 40)
+                        .background(
+                            Capsule()
+                                .fill(on ? AppTheme.card : Color.clear)
+                                .shadow(color: on ? Color.black.opacity(0.06) : .clear, radius: 2, y: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+            }
         }
+        .padding(4)
+        .background(Capsule().fill(Color.black.opacity(0.06)))
     }
 
     private func dayTitle(_ day: Date) -> String {

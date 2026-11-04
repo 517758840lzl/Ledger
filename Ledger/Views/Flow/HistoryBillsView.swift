@@ -64,10 +64,10 @@ struct MonthTransactionsView: View {
                 ForEach(Array(rows.enumerated()), id: \.element.id) { index, tx in
                     let cat = store.category(id: tx.categoryId)?.name
                     let visual = CategoryVisual.style(categoryName: cat, type: tx.type)
-                    let title = (tx.subcategory?.isEmpty == false ? tx.subcategory! : (cat ?? tx.type.localizedName))
+                    let title = TxRowText.title(tx: tx, store: store)
                     LedgerTxnCell(
                         title: title,
-                        subtitle: "\(store.account(id: tx.accountId)?.name ?? "") · \(tx.note.isEmpty ? L10n.t("flow.no_note") : tx.note)",
+                        subtitle: TxRowText.subtitle(tx: tx, store: store),
                         amount: {
                             let sign = tx.type == .expense ? "-" : (tx.type == .income ? "+" : "")
                             return "\(sign)\(store.symbol(tx.amount))"

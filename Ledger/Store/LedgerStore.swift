@@ -271,6 +271,7 @@ final class LedgerStore: ObservableObject {
         accounts = [cash]
         transactions = []
         budgets = []
+        UserDefaults.standard.removeObject(forKey: "ledger.assetsConfigured")
         save()
     }
 
