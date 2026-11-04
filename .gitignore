@@ -1,0 +1,16 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcfilelist
+
+# macOS
+.DS_Store
+
+# Cursor 编辑器本地配置
+.cursor/
