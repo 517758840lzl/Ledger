@@ -20,18 +20,14 @@ enum L10nPack {
 
     private static func map(for language: String) -> [String: String] {
         switch language {
-        case "en": return english
-        case "en-AU": return englishAustralia
-        case "en-GB": return englishUK
+        case "en", "en-AU", "en-GB": return english
         case "de": return german
-        case "fr": return french
-        case "fr-CA": return frenchCanada
+        case "fr", "fr-CA": return french
         case "ja": return japanese
         case "ko": return korean
         case "ms": return malay
         case "zh-Hans": return chineseSimplified
-        case "zh-Hant": return chineseTraditional
-        case "zh-Hant-TW": return chineseTaiwan
+        case "zh-Hant", "zh-Hant-TW": return chineseTraditional
         default: return [:]
         }
     }

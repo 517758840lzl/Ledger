@@ -28,7 +28,7 @@ struct AssetsHomeView: View {
                 }
             }
             .background(AppTheme.page.ignoresSafeArea())
-            .navigationTitle(L10n.assetsTitle)
+            .navigationTitle(configured ? L10n.assetsTitle : L10n.assetsStats)
             .toolbar {
                 if configured {
                     ToolbarItem(placement: .topBarTrailing) {

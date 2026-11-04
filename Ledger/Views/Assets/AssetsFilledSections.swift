@@ -96,31 +96,34 @@ struct AssetsSourceCard: View {
     var body: some View {
         let visual = AccountVisual.style(for: account.kind)
         Button(action: onTap) {
-            HStack(spacing: 12) {
+            HStack(alignment: .center, spacing: 12) {
                 Image(systemName: visual.systemImage)
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundStyle(visual.foreground)
                     .frame(width: 40, height: 40)
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(visual.background))
 
-                HStack(spacing: 8) {
-                    Text(account.name.ledgerText)
-                        .font(.body.weight(.semibold))
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack(spacing: 8) {
+                        Text(account.name.ledgerText)
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(AppTheme.textPrimary)
+                            .lineLimit(1)
+                        Text(account.manualOnly ? L10n.manualOnly : L10n.followLedger)
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(account.manualOnly ? AppTheme.textSecondary : AppTheme.greenDark)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(
+                                Capsule().fill(account.manualOnly ? Color.black.opacity(0.06) : AppTheme.greenSoft)
+                            )
+                    }
+                    Text(store.symbol(store.balance(for: account)))
+                        .font(.body.weight(.bold))
                         .foregroundStyle(AppTheme.textPrimary)
-                        .lineLimit(1)
-                    Text(account.manualOnly ? L10n.manualOnly : L10n.followLedger)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(AppTheme.textSecondary)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(Capsule().fill(Color.black.opacity(0.06)))
                 }
 
-                Spacer(minLength: 8)
-
-                Text(store.symbol(store.balance(for: account)))
-                    .font(.body.weight(.bold))
-                    .foregroundStyle(AppTheme.textPrimary)
+                Spacer(minLength: 0)
             }
             .padding(14)
             .background(

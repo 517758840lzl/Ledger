@@ -372,7 +372,14 @@ final class LedgerStore: ObservableObject {
 
     func symbol(_ amount: Double) -> String {
         let sign = amount < 0 ? "-" : ""
-        return "\(sign)\(settings.currencySymbol)\(String(format: "%.2f", abs(amount)))"
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        formatter.usesGroupingSeparator = true
+        formatter.groupingSeparator = ","
+        let body = formatter.string(from: NSNumber(value: abs(amount))) ?? String(format: "%.2f", abs(amount))
+        return "\(sign)\(settings.currencySymbol)\(body)"
     }
 
     func yearMonth(for date: Date = Date()) -> String {

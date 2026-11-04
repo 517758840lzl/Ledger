@@ -68,10 +68,10 @@ enum LedgerText {
     }
 
     private static let packs: [[String: String]] = [
-        L10nPack.english, L10nPack.englishAustralia, L10nPack.englishUK,
-        L10nPack.german, L10nPack.french, L10nPack.frenchCanada,
+        L10nPack.english,
+        L10nPack.german, L10nPack.french,
         L10nPack.japanese, L10nPack.korean, L10nPack.malay,
-        L10nPack.chineseSimplified, L10nPack.chineseTraditional, L10nPack.chineseTaiwan,
+        L10nPack.chineseSimplified, L10nPack.chineseTraditional,
     ]
 
     private static let namePrefixes = ["cat.", "preset.", "sample."]
