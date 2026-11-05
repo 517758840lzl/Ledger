@@ -18,28 +18,41 @@ final class LedgerStore: ObservableObject {
     /// Bumped on locale change so SwiftUI rebuilds every screen.
     @Published var localeEpoch: Int = 0
 
-    private let fileURL: URL = {
-        let dir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return dir.appendingPathComponent("ledger-data.json")
-    }()
+    let fileURL: URL
+    let defaults: UserDefaults
+    let bundleID: String
+    let book: LedgerBookDatabase?
+    var cloud: LedgerCloudCoordinator?
 
-    init() {
-        if !load() {
+    init(storageRoot: URL? = nil, defaults: UserDefaults = .standard, bundleID: String? = nil, opensCloud: Bool = true) {
+        let root = storageRoot ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        fileURL = root.appendingPathComponent("ledger-data.json")
+        self.defaults = defaults
+        self.bundleID = bundleID ?? LedgerCloudIdentity.currentBundleID
+        book = LedgerBookDatabase(root: root)
+        if let book {
+            bootDatabase(book)
+        } else if !load() {
             seedDefaults()
             save()
         }
         migrateDefaultLocaleIfNeeded()
         applyLocale(settings.languageCode, currencyCode: settings.currencyCode, currencySymbol: settings.currencySymbol, persist: false)
+        if opensCloud, let book {
+            cloud = LedgerCloudCoordinator(book: book, bundleID: self.bundleID) { [weak self] in
+                self?.reloadBook()
+            }
+        }
     }
 
     /// One-time switch from the old Chinese default to English + USD.
     private func migrateDefaultLocaleIfNeeded() {
         let key = "ledger.migratedDefaultEn"
-        guard !UserDefaults.standard.bool(forKey: key) else { return }
+        guard !defaults.bool(forKey: key) else { return }
         settings.languageCode = AppLocaleCatalog.defaultLanguageCode
         settings.currencyCode = AppLocaleCatalog.defaultCurrencyCode
         settings.currencySymbol = AppLocaleCatalog.defaultCurrencySymbol
-        UserDefaults.standard.set(true, forKey: key)
+        defaults.set(true, forKey: key)
         save()
     }
 
@@ -56,14 +69,14 @@ final class LedgerStore: ObservableObject {
         if let currencyCode { next.currencyCode = currencyCode }
         if let currencySymbol { next.currencySymbol = currencySymbol }
         settings = next
-        UserDefaults.standard.set([languageCode], forKey: "AppleLanguages")
+        defaults.set([languageCode], forKey: "AppleLanguages")
         localeEpoch &+= 1
         if persist { save() }
     }
 
     // MARK: - Persistence
 
-    private struct Snapshot: Codable {
+    struct Snapshot: Codable {
         var accounts: [Account]
         var categories: [Category]
         var transactions: [Transaction]
@@ -84,9 +97,10 @@ final class LedgerStore: ObservableObject {
     }
 
     func save() {
-        let snap = Snapshot(accounts: accounts, categories: categories, transactions: transactions, budgets: budgets, settings: settings)
-        if let data = try? JSONEncoder().encode(snap) {
-            try? data.write(to: fileURL, options: .atomic)
+        if book != nil {
+            persist(markUserEdit: true)
+        } else {
+            writeLegacyFile()
         }
     }
 
