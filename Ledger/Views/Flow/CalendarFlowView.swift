@@ -46,8 +46,7 @@ struct CalendarFlowView: View {
                     Button {
                         cursor = cal.date(byAdding: .month, value: -1, to: cursor) ?? cursor
                     } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.body.weight(.semibold))
+                        LedgerMark(symbol: "MarkChevronLeft", point: 17)
                             .foregroundStyle(AppTheme.textPrimary)
                             .frame(width: 36, height: 36)
                     }
@@ -57,8 +56,7 @@ struct CalendarFlowView: View {
                     Button {
                         cursor = cal.date(byAdding: .month, value: 1, to: cursor) ?? cursor
                     } label: {
-                        Image(systemName: "chevron.right")
-                            .font(.body.weight(.semibold))
+                        LedgerMark(symbol: "MarkChevronRight", point: 17)
                             .foregroundStyle(AppTheme.textPrimary)
                             .frame(width: 36, height: 36)
                     }
@@ -107,7 +105,7 @@ struct CalendarFlowView: View {
                                     return "\(sign)\(store.symbol(tx.amount))"
                                 }(),
                                 amountColor: tx.type == .income ? AppTheme.incomeAmount : AppTheme.textPrimary,
-                                iconSystemImage: visual.systemImage,
+                                iconMark: visual.markName,
                                 iconForeground: visual.foreground,
                                 iconBackground: visual.background,
                                 embedded: true
@@ -167,8 +165,7 @@ struct CalendarFlowView: View {
         VStack(spacing: 14) {
             ZStack {
                 Circle().fill(AppTheme.greenSoft.opacity(0.55)).frame(width: 72, height: 72)
-                Image(systemName: "doc.text")
-                    .font(.system(size: 26, weight: .medium))
+                LedgerMark(symbol: "MarkPage", point: 26, weight: .medium)
                     .foregroundStyle(AppTheme.green)
             }
             Text(L10n.t("flow.calendar_empty"))

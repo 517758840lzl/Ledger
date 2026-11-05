@@ -70,8 +70,8 @@ struct AddEntryView: View {
                 Button {
                     if dirty { confirmDiscard = true } else { router.popFlow() }
                 } label: {
-                    Label(L10n.t("common.back"), systemImage: "chevron.left")
-                        .labelStyle(.iconOnly)
+                    LedgerMark(symbol: "MarkChevronLeft", point: 17)
+                        .accessibilityLabel(L10n.t("common.back"))
                 }
             }
             if editing != nil {

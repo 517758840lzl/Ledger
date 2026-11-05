@@ -80,8 +80,7 @@ struct OnboardingView: View {
                 RoundedRectangle(cornerRadius: 22, style: .continuous)
                     .fill(AppTheme.greenDark)
                     .frame(width: 88, height: 88)
-                Image(systemName: "book.closed.fill")
-                    .font(.system(size: 36, weight: .semibold))
+                LedgerMark(symbol: "MarkBookClosed", point: 36)
                     .foregroundStyle(AppTheme.greenSoft)
             }
             Text("Ledger")

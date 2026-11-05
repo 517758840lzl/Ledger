@@ -97,8 +97,7 @@ struct AssetsSourceCard: View {
         let visual = AccountVisual.style(for: account.kind)
         Button(action: onTap) {
             HStack(alignment: .center, spacing: 12) {
-                Image(systemName: visual.systemImage)
-                    .font(.system(size: 16, weight: .semibold))
+                LedgerMark(symbol: visual.markName, point: 16)
                     .foregroundStyle(visual.foreground)
                     .frame(width: 40, height: 40)
                     .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(visual.background))
@@ -163,8 +162,7 @@ struct AssetsRecentExpensesBlock: View {
 
             if rows.isEmpty {
                 VStack(spacing: 14) {
-                    Image(systemName: "doc.text")
-                        .font(.system(size: 28, weight: .semibold))
+                    LedgerMark(symbol: "MarkPage", point: 28)
                         .foregroundStyle(AppTheme.greenDark.opacity(0.45))
                         .frame(width: 88, height: 88)
                         .background(Circle().fill(AppTheme.greenSoft.opacity(0.55)))
@@ -193,8 +191,7 @@ struct AssetsRecentExpensesBlock: View {
                         let cat = store.category(id: tx.categoryId)
                         let visual = CategoryVisual.style(categoryName: cat?.name ?? "", type: .expense)
                         HStack(spacing: 12) {
-                            Image(systemName: visual.systemImage)
-                                .font(.system(size: 14, weight: .semibold))
+                            LedgerMark(symbol: visual.markName, point: 14)
                                 .foregroundStyle(visual.foreground)
                                 .frame(width: 36, height: 36)
                                 .background(Circle().fill(visual.background))

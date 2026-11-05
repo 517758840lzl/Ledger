@@ -16,10 +16,10 @@ struct SettingsHomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     settingsGroup(L10n.t("settings.section_ledger")) {
-                        settingsPush(L10n.accounts, icon: "creditcard.fill", tint: Color(red: 0.20, green: 0.55, blue: 0.35), route: .accounts)
-                        settingsPush(L10n.categories, icon: "square.grid.3x3.fill", tint: Color(red: 0.72, green: 0.55, blue: 0.28), route: .categories)
-                        settingsPush(L10n.export, icon: "arrow.down.to.line", tint: Color(red: 0.25, green: 0.45, blue: 0.85), route: .export)
-                        settingsPush(L10n.t("settings.import"), icon: "arrow.up.to.line", tint: Color(red: 0.20, green: 0.65, blue: 0.70), route: .importData)
+                        settingsPush(L10n.accounts, icon: "MarkCard", tint: Color(red: 0.20, green: 0.55, blue: 0.35), route: .accounts)
+                        settingsPush(L10n.categories, icon: "MarkGrid", tint: Color(red: 0.72, green: 0.55, blue: 0.28), route: .categories)
+                        settingsPush(L10n.export, icon: "MarkDown", tint: Color(red: 0.25, green: 0.45, blue: 0.85), route: .export)
+                        settingsPush(L10n.t("settings.import"), icon: "MarkUp", tint: Color(red: 0.20, green: 0.65, blue: 0.70), route: .importData)
                         Button {
                             router.pendingConfirm = PendingConfirm(
                                 title: L10n.t("settings.clear_confirm_title"),
@@ -28,15 +28,15 @@ struct SettingsHomeView: View {
                                 run: { store.clearLocalDataKeepingCash() }
                             )
                         } label: {
-                            settingsRow(L10n.clearLocal, icon: "trash.fill", tint: Color(red: 0.85, green: 0.25, blue: 0.25), destructive: true)
+                            settingsRow(L10n.clearLocal, icon: "MarkTrash", tint: Color(red: 0.85, green: 0.25, blue: 0.25), destructive: true)
                         }
                     }
 
                     settingsGroup(L10n.t("settings.section_general")) {
-                        settingsPush(L10n.language, icon: "character.book.closed.fill", tint: Color(red: 0.30, green: 0.45, blue: 0.90), route: .language)
-                        settingsPush(L10n.currency, icon: "dollarsign.circle.fill", tint: Color(red: 0.35, green: 0.65, blue: 0.90), route: .currency)
-                        settingsPush(L10n.reminder, icon: "bell.fill", tint: Color(red: 0.95, green: 0.55, blue: 0.20), route: .reminder)
-                        settingsPush(L10n.about, icon: "info.circle.fill", tint: Color(red: 0.90, green: 0.40, blue: 0.55), route: .about)
+                        settingsPush(L10n.language, icon: "MarkLetters", tint: Color(red: 0.30, green: 0.45, blue: 0.90), route: .language)
+                        settingsPush(L10n.currency, icon: "MarkCoin", tint: Color(red: 0.35, green: 0.65, blue: 0.90), route: .currency)
+                        settingsPush(L10n.reminder, icon: "MarkBell", tint: Color(red: 0.95, green: 0.55, blue: 0.20), route: .reminder)
+                        settingsPush(L10n.about, icon: "MarkInfo", tint: Color(red: 0.90, green: 0.40, blue: 0.55), route: .about)
                     }
                 }
                 .padding(16)
@@ -114,8 +114,7 @@ struct SettingsHomeView: View {
 
     private func settingsRow(_ title: String, icon: String, tint: Color, destructive: Bool) -> some View {
         HStack(spacing: 14) {
-            Image(systemName: icon)
-                .font(.system(size: 15, weight: .semibold))
+            LedgerMark(symbol: icon, point: 15)
                 .foregroundStyle(tint)
                 .frame(width: 36, height: 36)
                 .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(tint.opacity(0.14)))
@@ -123,8 +122,7 @@ struct SettingsHomeView: View {
                 .font(.body)
                 .foregroundStyle(destructive ? Color.red : AppTheme.textPrimary)
             Spacer(minLength: 0)
-            Image(systemName: "chevron.right")
-                .font(.system(size: 13, weight: .semibold))
+            LedgerMark(symbol: "MarkChevronRight", point: 13)
                 .foregroundStyle(Color(white: 0.75))
         }
         .padding(.horizontal, 16)

@@ -98,12 +98,12 @@ struct AssetsHomeView: View {
                         .fill(LinearGradient(colors: [AppTheme.greenDark, AppTheme.green], startPoint: .topLeading, endPoint: .bottomTrailing))
                 )
 
-                featureRow(icon: "chart.line.uptrend.xyaxis", title: L10n.featureAuto, body: L10n.featureAutoBody)
-                featureRow(icon: "lock.shield", title: L10n.featureLocal, body: L10n.featureLocalBody)
-                featureRow(icon: "iphone", title: L10n.featureNoCard, body: L10n.featureNoCardBody)
+                featureRow(icon: "MarkTrend", title: L10n.featureAuto, body: L10n.featureAutoBody)
+                featureRow(icon: "MarkLock", title: L10n.featureLocal, body: L10n.featureLocalBody)
+                featureRow(icon: "MarkHandset", title: L10n.featureNoCard, body: L10n.featureNoCardBody)
 
                 HStack(alignment: .top, spacing: 12) {
-                    Image(systemName: "building.columns.fill")
+                    LedgerMark(symbol: "MarkColumns", point: 17, weight: .regular)
                         .foregroundStyle(AppTheme.greenDark)
                         .frame(width: 28, height: 28)
                     Text(L10n.assetsStockHint)
@@ -151,8 +151,7 @@ struct AssetsHomeView: View {
 
     private func featureRow(icon: String, title: String, body: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
-            Image(systemName: icon)
-                .font(.body.weight(.semibold))
+            LedgerMark(symbol: icon, point: 17)
                 .foregroundStyle(AppTheme.greenDark)
                 .frame(width: 36, height: 36)
                 .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(AppTheme.greenSoft))
@@ -221,8 +220,7 @@ struct AssetsEditorView: View {
                             Spacer()
                             Text(store.symbol(store.balance(for: acc)))
                                 .foregroundStyle(AppTheme.textPrimary)
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
+                            LedgerMark(symbol: "MarkChevronRight", point: 12)
                                 .foregroundStyle(Color(white: 0.75))
                         }
                         .padding(14)

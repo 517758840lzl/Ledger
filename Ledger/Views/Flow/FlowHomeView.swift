@@ -44,8 +44,7 @@ struct FlowHomeView: View {
                         HStack {
                             Text(L10n.historyBills)
                             Spacer()
-                            Image(systemName: "chevron.right")
-                                .font(.caption.weight(.semibold))
+                            LedgerMark(symbol: "MarkChevronRight", point: 12)
                                 .foregroundStyle(Color(white: 0.75))
                         }
                         .foregroundStyle(AppTheme.textPrimary)
@@ -55,7 +54,7 @@ struct FlowHomeView: View {
                     .buttonStyle(.plain)
 
                     HStack {
-                        Image(systemName: "magnifyingglass").foregroundStyle(AppTheme.textSecondary)
+                        LedgerMark(symbol: "MarkSearch", point: 17, weight: .regular).foregroundStyle(AppTheme.textSecondary)
                         TextField(L10n.searchPlaceholder, text: $query)
                     }
                     .padding(12)
@@ -93,7 +92,7 @@ struct FlowHomeView: View {
                     Button {
                         router.flowPath.append(FlowRoute.calendar)
                     } label: {
-                        Image(systemName: "calendar")
+                        LedgerMark(symbol: "MarkCalendar", point: 17, weight: .regular)
                             .foregroundStyle(AppTheme.greenDark)
                     }
                     .accessibilityLabel(L10n.calendarTitle)
@@ -125,7 +124,7 @@ struct FlowHomeView: View {
         VStack(spacing: 16) {
             ZStack {
                 Circle().fill(AppTheme.greenSoft.opacity(0.45)).frame(width: 88, height: 88)
-                Image(systemName: "doc.text").font(.system(size: 30)).foregroundStyle(AppTheme.green)
+                LedgerMark(symbol: "MarkPage", point: 30, weight: .regular).foregroundStyle(AppTheme.green)
             }
             Text(L10n.emptyFlow)
                 .foregroundStyle(AppTheme.textSecondary)
@@ -187,7 +186,7 @@ struct FlowHomeView: View {
             subtitle: subtitle,
             amount: amountText(tx),
             amountColor: tx.type == .income ? AppTheme.incomeAmount : AppTheme.textPrimary,
-            iconSystemImage: visual.systemImage,
+            iconMark: visual.markName,
             iconForeground: visual.foreground,
             iconBackground: visual.background,
             embedded: true

@@ -32,7 +32,7 @@ struct AccountPickerSheet: View {
                         router.settingsPath.append(SettingsRoute.accountNew)
                     } label: {
                         HStack(spacing: 8) {
-                            Image(systemName: "plus")
+                            LedgerMark(symbol: "MarkPlus", point: 17)
                             Text(L10n.t("settings.add_account"))
                         }
                         .font(.headline)

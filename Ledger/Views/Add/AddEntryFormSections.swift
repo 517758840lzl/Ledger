@@ -68,7 +68,7 @@ extension AddEntryView {
                         title: L10n.fromAccount,
                         value: store.account(id: accountId ?? UUID())?.name.ledgerText ?? L10n.cash
                     ) { pickingTo = false; showAccountPicker = true }
-                    Image(systemName: "arrow.left.arrow.right")
+                    LedgerMark(symbol: "MarkSwap", point: 17, weight: .regular)
                         .foregroundStyle(AppTheme.greenDark)
                     transferPick(
                         title: L10n.toAccount,
@@ -87,7 +87,7 @@ extension AddEntryView {
             LedgerOutlinedField(
                 label: L10n.date,
                 value: Calendar.current.isDateInToday(date) ? L10n.today : mediumDate(date),
-                trailingSystemImage: "calendar"
+                trailingMark: "MarkCalendar"
             ) {
                 showDate = true
             }
@@ -138,8 +138,7 @@ extension AddEntryView {
                             subcategory = nil
                         } label: {
                             VStack(spacing: 6) {
-                                Image(systemName: visual.systemImage)
-                                    .font(.system(size: 18, weight: .semibold))
+                                LedgerMark(symbol: visual.markName, point: 18)
                                     .foregroundStyle(on ? AppTheme.greenDark : visual.foreground)
                                     .frame(width: 52, height: 52)
                                     .background(Circle().fill(on ? AppTheme.greenSoft : visual.background))
@@ -269,8 +268,7 @@ extension AddEntryView {
         } label: {
             Group {
                 if key == "⌫" {
-                    Image(systemName: "delete.left")
-                        .font(.title3.weight(.semibold))
+                    LedgerMark(symbol: "MarkErase", point: 20)
                 } else {
                     Text(key).font(.title3.weight(.semibold))
                 }
@@ -350,7 +348,7 @@ extension AddEntryView {
                 Text(title).foregroundStyle(AppTheme.textSecondary)
                 Spacer()
                 Text(value).foregroundStyle(AppTheme.textPrimary)
-                Image(systemName: "chevron.down").font(.caption).foregroundStyle(AppTheme.textSecondary)
+                LedgerMark(symbol: "MarkChevronDown", point: 12).foregroundStyle(AppTheme.textSecondary)
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 14)
@@ -364,7 +362,7 @@ extension AddEntryView {
                 HStack {
                     Text(value).foregroundStyle(AppTheme.textPrimary).lineLimit(1)
                     Spacer(minLength: 0)
-                    Image(systemName: "chevron.down").font(.caption2).foregroundStyle(AppTheme.textSecondary)
+                    LedgerMark(symbol: "MarkChevronDown", point: 11, weight: .regular).foregroundStyle(AppTheme.textSecondary)
                 }
                 .padding(10)
                 .background(RoundedRectangle(cornerRadius: 12).stroke(Color.black.opacity(0.08)))

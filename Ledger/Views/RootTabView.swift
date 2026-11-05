@@ -91,8 +91,8 @@ struct RootTabView: View {
 
     private var tabBar: some View {
         HStack(spacing: 0) {
-            tabButton(.flow, title: L10n.tabFlow, system: "doc.text")
-            tabButton(.monthly, title: L10n.tabMonthly, system: "chart.xyaxis.line")
+            tabButton(.flow, title: L10n.tabFlow, mark: "MarkPage")
+            tabButton(.monthly, title: L10n.tabMonthly, mark: "MarkChart")
             Button {
                 router.openAdd()
             } label: {
@@ -101,16 +101,15 @@ struct RootTabView: View {
                         .fill(AppTheme.greenSoft)
                         .frame(width: 58, height: 58)
                         .shadow(color: .black.opacity(0.08), radius: 6, y: 2)
-                    Image(systemName: "plus")
-                        .font(.system(size: 22, weight: .bold))
+                    LedgerMark(symbol: "MarkPlusBold", point: 22, weight: .bold)
                         .foregroundStyle(AppTheme.textPrimary)
                 }
                 .offset(y: -10)
             }
             .frame(maxWidth: .infinity)
             .accessibilityLabel(L10n.addTitle)
-            tabButton(.assets, title: L10n.tabAssets, system: "dollarsign.circle", asset: "TabPiggy")
-            tabButton(.settings, title: L10n.tabSettings, system: "gearshape")
+            tabButton(.assets, title: L10n.tabAssets, mark: "MarkCoin", asset: "TabPiggy")
+            tabButton(.settings, title: L10n.tabSettings, mark: "MarkGear")
         }
         .padding(.horizontal, 8)
         .padding(.top, 8)
@@ -118,7 +117,7 @@ struct RootTabView: View {
         .background(AppTheme.card)
     }
 
-    private func tabButton(_ value: RootTab, title: String, system: String, asset: String? = nil) -> some View {
+    private func tabButton(_ value: RootTab, title: String, mark: String, asset: String? = nil) -> some View {
         let on = router.tab == value
         return Button {
             router.tab = value
@@ -133,8 +132,7 @@ struct RootTabView: View {
                             .scaledToFit()
                             .frame(width: 22, height: 22)
                     } else {
-                        Image(systemName: system)
-                            .font(.system(size: 18, weight: .semibold))
+                        LedgerMark(symbol: mark, point: 18)
                     }
                 }
                 .foregroundStyle(on ? AppTheme.greenDark : AppTheme.textSecondary)

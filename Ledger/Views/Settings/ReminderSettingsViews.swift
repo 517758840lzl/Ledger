@@ -80,7 +80,7 @@ struct ReminderSettingsView: View {
                         .font(.caption)
                         .foregroundStyle(AppTheme.textSecondary)
                     HStack(spacing: 12) {
-                        Image(systemName: "bell.fill")
+                        LedgerMark(symbol: "MarkBell", point: 17, weight: .regular)
                             .foregroundStyle(AppTheme.greenDark)
                             .frame(width: 36, height: 36)
                             .background(RoundedRectangle(cornerRadius: 10).fill(AppTheme.greenSoft))

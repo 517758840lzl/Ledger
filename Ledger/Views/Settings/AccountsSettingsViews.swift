@@ -69,8 +69,7 @@ struct AccountEditorView: View {
                                         .foregroundStyle(AppTheme.textPrimary)
                                 }
                                 Spacer()
-                                Image(systemName: "chevron.down")
-                                    .font(.caption.weight(.semibold))
+                                LedgerMark(symbol: "MarkChevronDown", point: 12)
                                     .foregroundStyle(AppTheme.textSecondary)
                             }
                         }
@@ -196,7 +195,7 @@ struct AccountHistoryView: View {
                                     : (tx.note.isEmpty ? mediumDate(tx.date) : tx.note),
                                 amount: amountText(tx),
                                 amountColor: tx.type == .income ? AppTheme.incomeAmount : AppTheme.textPrimary,
-                                iconSystemImage: visual.systemImage,
+                                iconMark: visual.markName,
                                 iconForeground: visual.foreground,
                                 iconBackground: visual.background,
                                 showsChevron: true,

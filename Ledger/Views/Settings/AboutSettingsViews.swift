@@ -17,8 +17,7 @@ struct AboutSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 14) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Image(systemName: "info.circle.fill")
-                        .font(.title2)
+                    LedgerMark(symbol: "MarkInfo", point: 22, weight: .regular)
                         .foregroundStyle(.white.opacity(0.9))
                         .frame(width: 40, height: 40)
                         .background(Circle().fill(.white.opacity(0.18)))
@@ -55,15 +54,14 @@ struct AboutSettingsView: View {
                     PrivacyPolicyView()
                 } label: {
                     HStack(spacing: 12) {
-                        Image(systemName: "shield.fill")
+                        LedgerMark(symbol: "MarkShield", point: 17, weight: .regular)
                             .foregroundStyle(Color(red: 0.15, green: 0.55, blue: 0.55))
                             .frame(width: 36, height: 36)
                             .background(RoundedRectangle(cornerRadius: 10).fill(Color(red: 0.15, green: 0.55, blue: 0.55).opacity(0.14)))
                         Text(L10n.privacy)
                             .foregroundStyle(AppTheme.textPrimary)
                         Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.semibold))
+                        LedgerMark(symbol: "MarkChevronRight", point: 12)
                             .foregroundStyle(Color(white: 0.75))
                     }
                     .padding()

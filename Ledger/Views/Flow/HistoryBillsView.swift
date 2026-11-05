@@ -23,8 +23,7 @@ struct HistoryBillsView: View {
                     VStack(spacing: 16) {
                         ZStack {
                             Circle().fill(AppTheme.greenSoft).frame(width: 72, height: 72)
-                            Image(systemName: "doc.text")
-                                .font(.title2.weight(.semibold))
+                            LedgerMark(symbol: "MarkPage", point: 22)
                                 .foregroundStyle(AppTheme.greenDark)
                         }
                         Text(L10n.t("flow.history_empty"))
@@ -141,7 +140,7 @@ struct MonthTransactionsView: View {
                                 return "\(sign)\(store.symbol(tx.amount))"
                             }(),
                             amountColor: tx.type == .income ? AppTheme.incomeAmount : AppTheme.textPrimary,
-                            iconSystemImage: visual.systemImage,
+                            iconMark: visual.markName,
                             iconForeground: visual.foreground,
                             iconBackground: visual.background,
                             embedded: true

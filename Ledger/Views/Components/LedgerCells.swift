@@ -25,7 +25,7 @@ struct LedgerCard<Content: View>: View {
 struct LedgerOutlinedField: View {
     let label: String
     let value: String
-    var trailingSystemImage: String = "chevron.down"
+    var trailingMark: String = "MarkChevronDown"
     var action: (() -> Void)?
 
     var body: some View {
@@ -36,8 +36,7 @@ struct LedgerOutlinedField: View {
                 Text(value.isEmpty ? " " : value)
                     .foregroundStyle(AppTheme.textPrimary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Image(systemName: trailingSystemImage)
-                    .font(.caption.weight(.semibold))
+                LedgerMark(symbol: trailingMark, point: 12)
                     .foregroundStyle(AppTheme.textSecondary)
             }
             .padding(.horizontal, 14)
@@ -87,8 +86,7 @@ struct LedgerAccountCell: View {
                     Text(amount)
                         .font(.headline)
                         .foregroundStyle(AppTheme.textPrimary)
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                    LedgerMark(symbol: "MarkChevronRight", point: 12)
                         .foregroundStyle(Color(white: 0.75))
                 }
                 .padding(14)
@@ -133,8 +131,7 @@ struct LedgerSelectCell: View {
                     .foregroundStyle(AppTheme.textPrimary)
                 Spacer()
                 if selected {
-                    Image(systemName: "checkmark")
-                        .font(.body.weight(.semibold))
+                    LedgerMark(symbol: "MarkCheck", point: 17)
                         .foregroundStyle(AppTheme.greenDark)
                 }
             }
@@ -155,7 +152,7 @@ struct LedgerTxnCell: View {
     let subtitle: String
     let amount: String
     var amountColor: Color = AppTheme.textPrimary
-    var iconSystemImage: String? = nil
+    var iconMark: String? = nil
     var iconForeground: Color = AppTheme.greenDark
     var iconBackground: Color = AppTheme.greenSoft
     var showsChevron: Bool = false
@@ -168,9 +165,8 @@ struct LedgerTxnCell: View {
             action?()
         } label: {
             HStack(spacing: 12) {
-                if let iconSystemImage {
-                    Image(systemName: iconSystemImage)
-                        .font(.system(size: 15, weight: .semibold))
+                if let iconMark {
+                    LedgerMark(symbol: iconMark, point: 15)
                         .foregroundStyle(iconForeground)
                         .frame(width: 40, height: 40)
                         .background(Circle().fill(iconBackground))
@@ -184,8 +180,7 @@ struct LedgerTxnCell: View {
                     .font(.headline)
                     .foregroundStyle(amountColor)
                 if showsChevron {
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                    LedgerMark(symbol: "MarkChevronRight", point: 12)
                         .foregroundStyle(Color(white: 0.75))
                 }
             }

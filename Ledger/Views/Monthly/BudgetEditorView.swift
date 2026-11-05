@@ -84,8 +84,7 @@ struct BudgetEditorView: View {
     private func categoryRow(_ category: Category) -> some View {
         let visual = CategoryVisual.style(categoryName: category.name, type: category.type)
         return HStack(spacing: 12) {
-            Image(systemName: visual.systemImage)
-                .font(.body)
+            LedgerMark(symbol: visual.markName, point: 17, weight: .regular)
                 .foregroundStyle(visual.foreground)
                 .frame(width: 36, height: 36)
                 .background(Circle().fill(visual.background))

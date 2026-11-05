@@ -66,8 +66,7 @@ struct CurrencySettingsView: View {
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             if store.settings.currencyCode == entry.currencyCode {
-                                Image(systemName: "checkmark")
-                                    .font(.body.weight(.semibold))
+                                LedgerMark(symbol: "MarkCheck", point: 17)
                                     .foregroundStyle(AppTheme.greenDark)
                             }
                         }

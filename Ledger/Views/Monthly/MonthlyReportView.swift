@@ -102,8 +102,7 @@ struct MonthlyReportView: View {
     private var monthSwitcher: some View {
         HStack(spacing: 4) {
             Button { monthOffset -= 1 } label: {
-                Image(systemName: "chevron.left")
-                    .font(.body.weight(.semibold))
+                LedgerMark(symbol: "MarkChevronLeft", point: 17)
                     .foregroundStyle(AppTheme.textPrimary)
                     .frame(width: 36, height: 36)
             }
@@ -112,8 +111,7 @@ struct MonthlyReportView: View {
             Button {
                 if monthOffset < 0 { monthOffset += 1 }
             } label: {
-                Image(systemName: "chevron.right")
-                    .font(.body.weight(.semibold))
+                LedgerMark(symbol: "MarkChevronRight", point: 17)
                     .foregroundStyle(monthOffset < 0 ? AppTheme.textPrimary : AppTheme.textSecondary.opacity(0.35))
                     .frame(width: 36, height: 36)
             }
@@ -223,8 +221,7 @@ struct MonthlyReportView: View {
                 let pct = expense > 0 ? Int((item.1 / expense) * 100) : 0
                 let visual = CategoryVisual.style(categoryName: item.0.name, type: .expense)
                 HStack(spacing: 12) {
-                    Image(systemName: visual.systemImage)
-                        .font(.system(size: 15, weight: .semibold))
+                    LedgerMark(symbol: visual.markName, point: 15)
                         .foregroundStyle(visual.foreground)
                         .frame(width: 40, height: 40)
                         .background(Circle().fill(visual.background))
@@ -289,8 +286,7 @@ struct MonthlyReportView: View {
                                 Text(String(format: L10n.t("monthly.view_category_detail"), item.0.name.ledgerText))
                                     .font(.subheadline.weight(.semibold))
                                 Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.caption.weight(.bold))
+                                LedgerMark(symbol: "MarkChevronRight", point: 12, weight: .bold)
                             }
                             .foregroundStyle(.white)
                             .padding(.horizontal, 14)
@@ -312,8 +308,7 @@ struct MonthlyReportView: View {
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(AppTheme.textPrimary)
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                    LedgerMark(symbol: "MarkChevronRight", point: 12)
                         .foregroundStyle(AppTheme.textSecondary)
                 }
                 .padding(14)
@@ -330,8 +325,7 @@ struct MonthlyReportView: View {
         VStack(alignment: .leading, spacing: 16) {
             Text(L10n.t("monthly.main_spend")).font(.headline)
             VStack(spacing: 14) {
-                Image(systemName: "doc.text")
-                    .font(.system(size: 22, weight: .semibold))
+                LedgerMark(symbol: "MarkPage", point: 22)
                     .foregroundStyle(AppTheme.greenDark)
                     .frame(width: 72, height: 72)
                     .background(Circle().fill(AppTheme.greenSoft.opacity(0.55)))
@@ -375,8 +369,7 @@ struct MonthlyReportView: View {
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(AppTheme.textPrimary)
                     Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
+                    LedgerMark(symbol: "MarkChevronRight", point: 12)
                         .foregroundStyle(AppTheme.textSecondary)
                 }
                 .padding(14)

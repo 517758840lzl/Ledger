@@ -16,8 +16,7 @@ struct ExportSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Image(systemName: "arrow.down.to.line")
-                        .font(.title2.weight(.semibold))
+                    LedgerMark(symbol: "MarkDown", point: 22)
                         .foregroundStyle(Color(red: 0.20, green: 0.40, blue: 0.85))
                         .frame(width: 44, height: 44)
                         .background(RoundedRectangle(cornerRadius: 12).fill(Color(red: 0.20, green: 0.40, blue: 0.85).opacity(0.14)))
@@ -85,8 +84,7 @@ struct ImportSettingsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Image(systemName: "arrow.up.to.line")
-                        .font(.title2.weight(.semibold))
+                    LedgerMark(symbol: "MarkUp", point: 22)
                         .foregroundStyle(AppTheme.greenDark)
                         .frame(width: 44, height: 44)
                         .background(RoundedRectangle(cornerRadius: 12).fill(AppTheme.greenSoft))
