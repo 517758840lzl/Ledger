@@ -238,97 +238,6 @@ final class LedgerStore: ObservableObject {
         }
     }
 
-    /// Parse app-exported CSV (sectioned or flat transaction table)
-    @discardableResult
-    func importCSV(text: String) -> Int {
-        var added = 0
-        let lines = text.split(whereSeparator: \.isNewline).map(String.init)
-        guard !lines.isEmpty else { return 0 }
-        let header = lines[0].lowercased()
-        if header.contains("date") && header.contains("amount") {
-            for line in lines.dropFirst() {
-                let cols = parseCSVLine(line)
-                guard cols.count >= 3, let amount = Double(cols[2]) else { continue }
-                let typeRaw = cols.count > 1 ? cols[1] : "expense"
-                let type = LedgerText.txType(from: typeRaw)
-                let note = (cols.count > 5 ? cols[5] : (cols.count > 4 ? cols[4] : ""))
-                    .trimmingCharacters(in: .whitespacesAndNewlines)
-                if note != "" && transactions.contains(where: { $0.amount == amount && ($0.note == note || $0.note.ledgerText == note) }) { continue }
-                let cash = accounts.first(where: { $0.kind == .cash }) ?? accounts.first
-                guard let cash else { continue }
-                var catId = categories.first(where: { $0.type == type && $0.enabled })?.id
-                if cols.count > 4 {
-                    let catName = LedgerText.canonical(cols[4])
-                    if let found = categories.first(where: { LedgerText.canonical($0.name) == catName && $0.type == type }) {
-                        catId = found.id
-                    }
-                }
-                let df = ISO8601DateFormatter(); df.formatOptions = [.withFullDate]
-                let date = df.date(from: cols[0]) ?? Date()
-                let tx = Transaction(type: type, amount: amount, accountId: cash.id, categoryId: type == .transfer ? nil : catId, note: note, date: date)
-                transactions.append(tx)
-                added += 1
-            }
-            save()
-        }
-        return added
-    }
-
-    private func parseCSVLine(_ line: String) -> [String] {
-        var result: [String] = []
-        var current = ""
-        var inQuotes = false
-        for ch in line {
-            if ch == "\"" { inQuotes.toggle(); continue }
-            if ch == "," && !inQuotes { result.append(current); current = ""; continue }
-            current.append(ch)
-        }
-        result.append(current)
-        return result
-    }
-
-    func exportFullCSV() -> URL? {
-        var lines: [String] = []
-        lines.append("# ledger-export v1")
-        lines.append("section,accounts")
-        lines.append("id,name,kind,opening,enabled,manualOnly,includeInNetWorth")
-        for a in accounts {
-            lines.append("\(a.id.uuidString),\(csvEscape(a.name)),\(a.kind.rawValue),\(a.openingBalance),\(a.enabled),\(a.manualOnly),\(a.includeInNetWorth)")
-        }
-        lines.append("section,categories")
-        lines.append("id,name,type,essential,canReduce,enabled,children")
-        for c in categories {
-            lines.append("\(c.id.uuidString),\(csvEscape(c.name)),\(c.type.rawValue),\(c.isEssential),\(c.canReduce),\(c.enabled),\(csvEscape(c.children.joined(separator: "|")))")
-        }
-        lines.append("section,budgets")
-        lines.append("yearMonth,total")
-        for b in budgets {
-            lines.append("\(b.yearMonth),\(b.total)")
-        }
-        lines.append("section,transactions")
-        lines.append("date,type,amount,account,category,note")
-        let df = ISO8601DateFormatter(); df.formatOptions = [.withFullDate]
-        for tx in transactions {
-            let acc = account(id: tx.accountId)?.name ?? ""
-            let cat = category(id: tx.categoryId)?.name ?? ""
-            lines.append("\(df.string(from: tx.date)),\(tx.type.rawValue),\(tx.amount),\(csvEscape(acc)),\(csvEscape(cat)),\(csvEscape(tx.note))")
-        }
-        let url = FileManager.default.temporaryDirectory.appendingPathComponent("ledger-export.csv")
-        do {
-            try lines.joined(separator: "\n").write(to: url, atomically: true, encoding: .utf8)
-            return url
-        } catch {
-            return nil
-        }
-    }
-
-    private func csvEscape(_ s: String) -> String {
-        if s.contains(",") || s.contains("\"") || s.contains("\n") {
-            return "\"\(s.replacingOccurrences(of: "\"", with: "\"\""))\""
-        }
-        return s
-    }
-
     func upsertBudget(_ budget: MonthBudget) {
         if let i = budgets.firstIndex(where: { $0.yearMonth == budget.yearMonth }) {
             budgets[i] = budget
@@ -403,28 +312,57 @@ final class LedgerStore: ObservableObject {
         monthIncome(ym) - monthExpense(ym)
     }
 
+    /// Spending change against the previous month. Flat only when the amounts match.
+    func expenseChangeLabel(for ym: String) -> String {
+        guard let prev = previousYearMonth(ym) else { return L10n.t("monthly.flat") }
+        let delta = monthExpense(ym) - monthExpense(prev)
+        if abs(delta) < 0.005 { return L10n.t("monthly.flat") }
+        if delta > 0 { return String(format: L10n.t("monthly.vs_more"), symbol(delta)) }
+        return String(format: L10n.t("monthly.vs_less"), symbol(-delta))
+    }
+
+    func previousYearMonth(_ ym: String) -> String? {
+        let parts = ym.split(separator: "-")
+        guard parts.count == 2, let year = Int(parts[0]), let month = Int(parts[1]) else { return nil }
+        var comps = DateComponents()
+        comps.year = year
+        comps.month = month
+        comps.day = 1
+        guard let date = Calendar.current.date(from: comps),
+              let prev = Calendar.current.date(byAdding: .month, value: -1, to: date) else { return nil }
+        return yearMonth(for: prev)
+    }
+
+    /// Credit balances stay positive while the cardholder owes money.
     func balance(for account: Account) -> Double {
         if account.manualOnly { return account.openingBalance }
+        let owes = account.kind == .credit
         var value = account.openingBalance
         for tx in transactions {
-            switch tx.type {
-            case .expense:
-                if tx.accountId == account.id { value -= tx.amount }
-            case .income:
-                if tx.accountId == account.id { value += tx.amount }
-            case .transfer:
-                if tx.accountId == account.id { value -= tx.amount }
-                if tx.toAccountId == account.id { value += tx.amount }
-            }
+            value += ledgerDelta(tx, accountID: account.id, owes: owes)
         }
         return value
+    }
+
+    /// Cash grows with income and money transferred in. Credit debt uses the opposite sign.
+    private func ledgerDelta(_ tx: Transaction, accountID: UUID, owes: Bool) -> Double {
+        var delta = 0.0
+        switch tx.type {
+        case .expense:
+            if tx.accountId == accountID { delta -= tx.amount }
+        case .income:
+            if tx.accountId == accountID { delta += tx.amount }
+        case .transfer:
+            if tx.accountId == accountID { delta -= tx.amount }
+            if tx.toAccountId == accountID { delta += tx.amount }
+        }
+        return owes ? -delta : delta
     }
 
     var netWorth: Double {
         accounts.filter(\.includeInNetWorth).reduce(0) { sum, acc in
             let b = balance(for: acc)
-            // credit card openingBalance is debt when positive
-            if acc.kind == .credit { return sum - abs(b) }
+            if acc.kind == .credit { return sum - b }
             return sum + b
         }
     }

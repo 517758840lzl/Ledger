@@ -50,7 +50,10 @@ final class LedgerCloudCoordinator {
     }
 
     private func performSync() async {
-        let mirror = LedgerCloudMirror(bundleID: bundleID)
+        guard let mirror = LedgerCloudMirror(bundleID: bundleID) else {
+            finishSync()
+            return
+        }
         let fetched = await mirror.fetch(since: book.changeTokenData())
         if case .synced(let payload, let token, let hasChanges) = fetched {
             var changed = false
@@ -69,6 +72,10 @@ final class LedgerCloudCoordinator {
                 await mirror.push(book.makePayload())
             }
         }
+        finishSync()
+    }
+
+    private func finishSync() {
         syncing = false
         if queued {
             queued = false

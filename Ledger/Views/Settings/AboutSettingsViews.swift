@@ -83,9 +83,10 @@ struct PrivacyPolicyView: View {
     private let sections: [(titleKey: String, bodyKey: String)] = [
         ("settings.privacy_intro_title", "settings.privacy_intro_body"),
         ("settings.privacy_collect_title", "settings.privacy_collect_body"),
-        ("settings.privacy_use_title", "settings.privacy_use_body"),
-        ("settings.privacy_third_title", "settings.privacy_third_body"),
-        ("settings.privacy_rights_title", "settings.privacy_rights_body")
+        ("settings.privacy_storage_title", "settings.privacy_storage_body"),
+        ("settings.privacy_reminder_title", "settings.privacy_reminder_body"),
+        ("settings.privacy_rights_title", "settings.privacy_rights_body"),
+        ("settings.privacy_use_title", "settings.privacy_use_body")
     ]
 
     var body: some View {

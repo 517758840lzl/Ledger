@@ -18,7 +18,8 @@ final class LedgerCloudMirror {
     private let container: CKContainer
     private let zoneID: CKRecordZone.ID
 
-    init(bundleID: String) {
+    init?(bundleID: String) {
+        guard LedgerCloudIdentity.declaresContainer(bundleID: bundleID) else { return nil }
         container = CKContainer(identifier: LedgerCloudIdentity.containerID(bundleID: bundleID))
         zoneID = CKRecordZone.ID(zoneName: LedgerCloudIdentity.zoneName(bundleID: bundleID), ownerName: CKCurrentUserDefaultName)
     }

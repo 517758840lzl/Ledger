@@ -44,23 +44,7 @@ struct MonthlyReportView: View {
         }.reversed()
     }
 
-    private var vsLastMonth: String {
-        let cal = Calendar.current
-        guard let prev = cal.date(
-            byAdding: .month,
-            value: -1,
-            to: cal.date(from: DateComponents(year: Int(ym.prefix(4)) ?? 2026, month: Int(ym.suffix(2)) ?? 1)) ?? Date()
-        ) else {
-            return L10n.t("monthly.flat")
-        }
-        let prevYm = store.yearMonth(for: prev)
-        let prevExp = store.monthExpense(prevYm)
-        // No prior-month baseline -> show Flat (not Up/Down)
-        if prevExp == 0 { return L10n.t("monthly.flat") }
-        let delta = (expense - prevExp) / prevExp
-        if abs(delta) < 0.02 { return L10n.t("monthly.flat") }
-        return delta > 0 ? L10n.t("monthly.up") : L10n.t("monthly.down")
-    }
+    private var vsLastMonth: String { store.expenseChangeLabel(for: ym) }
 
     var body: some View {
         NavigationStack(path: $router.monthlyPath) {
@@ -121,11 +105,23 @@ struct MonthlyReportView: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func fundedBudget(_ total: Double) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
+    private func fundedBudget(_ budget: MonthBudget) -> some View {
+        let total = budget.total
+        let over = expense - total
+        let overTint = Color(red: 0.70, green: 0.22, blue: 0.18)
+        return VStack(alignment: .leading, spacing: 10) {
             Text("\(L10n.t("monthly.budget_label")) \(store.symbol(total))")
+            Text("\(store.symbol(expense)) / \(store.symbol(total))")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(AppTheme.textPrimary)
+            Text(over > 0
+                 ? String(format: L10n.t("monthly.budget_over"), store.symbol(over))
+                 : String(format: L10n.t("monthly.budget_left"), store.symbol(total - expense)))
+                .font(.subheadline)
+                .foregroundStyle(over > 0 ? overTint : AppTheme.textSecondary)
             ProgressView(value: min(expense / max(total, 1), 1))
-                .tint(AppTheme.green)
+                .tint(over > 0 ? overTint : AppTheme.green)
+            categoryCapRows(budget)
             Button(L10n.t("monthly.set_budget")) {
                 router.monthlyPath.append(MonthlyRoute.budget(ym))
             }
@@ -137,11 +133,37 @@ struct MonthlyReportView: View {
         .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(AppTheme.card))
     }
 
+    @ViewBuilder
+    private func categoryCapRows(_ budget: MonthBudget) -> some View {
+        let rows = budget.categoryCaps.compactMap { id, cap -> (Category, Double, Double)? in
+            guard cap > 0, let category = store.category(id: id) else { return nil }
+            let spent = categoryBreakdown.first { $0.0.id == id }?.1 ?? 0
+            return (category, spent, cap)
+        }
+        .sorted { $0.1 > $1.1 }
+        if !rows.isEmpty {
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(rows, id: \.0.id) { row in
+                    let over = row.1 - row.2
+                    HStack {
+                        Text(row.0.name.ledgerText)
+                            .font(.subheadline)
+                            .foregroundStyle(AppTheme.textPrimary)
+                        Spacer(minLength: 8)
+                        Text("\(store.symbol(row.1)) / \(store.symbol(row.2))")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(over > 0 ? Color(red: 0.70, green: 0.22, blue: 0.18) : AppTheme.textSecondary)
+                    }
+                }
+            }
+        }
+    }
+
     /// Empty month: hint and outlined button sit on the page, matching Android.
     private var budgetBlock: some View {
         Group {
             if let b = store.budgets.first(where: { $0.yearMonth == ym }), b.total > 0 {
-                fundedBudget(b.total)
+                fundedBudget(b)
             } else {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(L10n.t("monthly.budget_empty"))

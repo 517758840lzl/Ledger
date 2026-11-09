@@ -153,6 +153,11 @@ final class LedgerTests: XCTestCase {
         XCTAssertEqual(database.loadBook().accounts[0].openingBalance, 80)
     }
 
+    func testCloudMirrorStaysClosedWhenTheContainerIsNotDeclared() {
+        XCTAssertFalse(LedgerCloudIdentity.declaresContainer(bundleID: "com.example.ledger"))
+        XCTAssertNil(LedgerCloudMirror(bundleID: "com.example.ledger"))
+    }
+
     func testCloudRecordRoundTrip() {
         let id = UUID()
         let account = Account(id: id, name: "Cash", kind: .cash, openingBalance: 12.5, enabled: true, manualOnly: true, includeInNetWorth: false)
@@ -180,6 +185,86 @@ final class LedgerTests: XCTestCase {
         XCTAssertEqual(decoded.budgets.first?.budget.categoryCaps[category.id], 5)
         XCTAssertEqual(decoded.savingsGoal, 70)
         XCTAssertEqual(records.first?.recordID.zoneID.zoneName, "com.example.ledger")
+    }
+
+    func testCreditSpendRaisesDebtAndPaymentLowersIt() {
+        defaults.set(true, forKey: "ledger.migratedDefaultEn")
+        let store = makeStore(bundleID: "com.example.card")
+        let cash = store.accounts[0]
+        let card = Account(name: "Card", kind: .credit, openingBalance: 5000)
+        store.upsertAccount(card)
+        store.addTransaction(Transaction(type: .expense, amount: 100, accountId: card.id))
+        XCTAssertEqual(store.balance(for: card), 5100)
+        XCTAssertEqual(store.netWorth, -5100)
+        store.addTransaction(Transaction(type: .transfer, amount: 100, accountId: cash.id, toAccountId: card.id))
+        XCTAssertEqual(store.balance(for: cash), -100)
+        XCTAssertEqual(store.balance(for: card), 5000)
+        XCTAssertEqual(store.netWorth, -5100)
+    }
+
+    func testExportRestoresAccountsBudgetsAndTransfers() throws {
+        defaults.set(true, forKey: "ledger.migratedDefaultEn")
+        let store = makeStore(bundleID: "com.example.export")
+        let cash = store.accounts[0]
+        let card = Account(name: "Card", kind: .credit, openingBalance: 40)
+        store.upsertAccount(card)
+        let dining = try XCTUnwrap(store.categories.first { $0.name == "cat.dining" })
+        let payment = Transaction(type: .transfer, amount: 15, accountId: cash.id, toAccountId: card.id, note: "pay, \"card\"")
+        let lunch = Transaction(type: .expense, amount: 9, accountId: card.id, categoryId: dining.id, subcategory: "tea", note: "lunch")
+        store.addTransaction(payment)
+        store.addTransaction(lunch)
+        var budget = MonthBudget(yearMonth: "2026-11", total: 200)
+        budget.categoryCaps[dining.id] = 30
+        store.upsertBudget(budget)
+        store.settings.savingsGoal = 80
+        store.save()
+
+        let url = try XCTUnwrap(store.exportFullCSV())
+        let text = try String(contentsOf: url, encoding: .utf8)
+        store.clearLocalDataKeepingCash()
+        XCTAssertEqual(store.importCSV(text: text), 2)
+        let restoredCard = try XCTUnwrap(store.accounts.first { $0.id == card.id })
+        XCTAssertEqual(store.balance(for: restoredCard), 34)
+        XCTAssertEqual(store.transactions.map(\.id).sorted { $0.uuidString < $1.uuidString }, [payment.id, lunch.id].sorted { $0.uuidString < $1.uuidString })
+        XCTAssertEqual(store.transactions.first { $0.id == payment.id }?.note, "pay, \"card\"")
+        XCTAssertEqual(store.transactions.first { $0.id == lunch.id }?.subcategory, "tea")
+        XCTAssertEqual(store.budgets.first { $0.id == budget.id }?.categoryCaps[dining.id], 30)
+        XCTAssertEqual(store.settings.savingsGoal, 80)
+        XCTAssertEqual(store.categories.first { $0.id == dining.id }?.children, dining.children)
+    }
+
+    func testFlatCSVAppendsWithoutReplacingAccounts() {
+        defaults.set(true, forKey: "ledger.migratedDefaultEn")
+        let store = makeStore(bundleID: "com.example.flat")
+        let before = store.accounts.count
+        let csv = "date,type,amount,account,category,note\n2026-11-01,expense,12,Cash,cat.dining,soup\n"
+        XCTAssertEqual(store.importCSV(text: csv), 1)
+        XCTAssertEqual(store.accounts.count, before)
+        XCTAssertEqual(store.transactions.count, 1)
+        XCTAssertEqual(store.transactions[0].note, "soup")
+    }
+
+    func testExpenseChangeLabelUsesTheAmount() {
+        defaults.set(true, forKey: "ledger.migratedDefaultEn")
+        let store = makeStore(bundleID: "com.example.delta")
+        let cash = store.accounts[0].id
+        let thisMonth = store.yearMonth()
+        let previous = store.previousYearMonth(thisMonth) ?? "2026-10"
+        store.addTransaction(Transaction(type: .expense, amount: 20, accountId: cash, date: monthDate(previous)))
+        store.addTransaction(Transaction(type: .expense, amount: 50, accountId: cash, date: monthDate(thisMonth)))
+        XCTAssertEqual(
+            store.expenseChangeLabel(for: thisMonth),
+            String(format: L10n.t("monthly.vs_more"), store.symbol(30))
+        )
+    }
+
+    private func monthDate(_ ym: String) -> Date {
+        let parts = ym.split(separator: "-")
+        var comps = DateComponents()
+        comps.year = Int(parts[0])
+        comps.month = Int(parts[1])
+        comps.day = 15
+        return Calendar.current.date(from: comps) ?? Date()
     }
 
     private func makeStore(bundleID: String) -> LedgerStore {

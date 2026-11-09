@@ -22,9 +22,9 @@ struct SummaryCard: View {
             Text("\(yearMonth) \(L10n.t("summary.balance"))")
                 .font(.system(size: 13, weight: .medium))
                 .foregroundStyle(AppTheme.greenMuted)
-            Text(store.symbol(abs(balance)))
+            Text(store.symbol(balance))
                 .font(.system(size: 36, weight: .bold, design: .rounded))
-                .foregroundStyle(vsLastMonth != nil && balance < 0 ? AppTheme.shortfallOnCard : .white)
+                .foregroundStyle(balance < 0 ? AppTheme.shortfallOnCard : .white)
             Divider().overlay(Color.white.opacity(0.2))
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
