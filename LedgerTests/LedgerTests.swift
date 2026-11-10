@@ -158,6 +158,22 @@ final class LedgerTests: XCTestCase {
         XCTAssertNil(LedgerCloudMirror(bundleID: "com.example.ledger"))
     }
 
+    func testContainerListIsReadFromTheSignedExecutable() {
+        let xml = Data("""
+        <?xml version="1.0" encoding="UTF-8"?>
+        <plist version="1.0"><dict>
+        <key>com.apple.developer.icloud-container-identifiers</key>
+        <array><string>iCloud.com.example.ledger</string></array>
+        </dict></plist>
+        """.utf8)
+        let signed = signedExecutable(entitlements: xml)
+        XCTAssertEqual(
+            LedgerCloudIdentity.containerIdentifiers(inExecutable: signed),
+            ["iCloud.com.example.ledger"]
+        )
+        XCTAssertTrue(LedgerCloudIdentity.containerIdentifiers(inExecutable: Data([0, 1, 2, 3])).isEmpty)
+    }
+
     func testCloudRecordRoundTrip() {
         let id = UUID()
         let account = Account(id: id, name: "Cash", kind: .cash, openingBalance: 12.5, enabled: true, manualOnly: true, includeInNetWorth: false)
@@ -270,6 +286,48 @@ final class LedgerTests: XCTestCase {
     private func makeStore(bundleID: String) -> LedgerStore {
         LedgerStore(storageRoot: root, defaults: defaults, bundleID: bundleID, opensCloud: false)
     }
+}
+
+private func signedExecutable(entitlements xml: Data) -> Data {
+    func be(_ value: UInt32, into data: inout Data) {
+        data.append(UInt8((value >> 24) & 0xff))
+        data.append(UInt8((value >> 16) & 0xff))
+        data.append(UInt8((value >> 8) & 0xff))
+        data.append(UInt8(value & 0xff))
+    }
+    func le(_ value: UInt32, into data: inout Data) {
+        data.append(UInt8(value & 0xff))
+        data.append(UInt8((value >> 8) & 0xff))
+        data.append(UInt8((value >> 16) & 0xff))
+        data.append(UInt8((value >> 24) & 0xff))
+    }
+    var signature = Data()
+    let entitlementsLength = UInt32(8 + xml.count)
+    let signatureLength = UInt32(20) + entitlementsLength
+    be(0xFADE0CC0, into: &signature)
+    be(signatureLength, into: &signature)
+    be(1, into: &signature)
+    be(5, into: &signature)
+    be(20, into: &signature)
+    be(0xFADE7171, into: &signature)
+    be(entitlementsLength, into: &signature)
+    signature.append(xml)
+
+    var executable = Data()
+    le(0xFEEDFACF, into: &executable)
+    le(0x0100000C, into: &executable)
+    le(0, into: &executable)
+    le(2, into: &executable)
+    le(1, into: &executable)
+    le(16, into: &executable)
+    le(0, into: &executable)
+    le(0, into: &executable)
+    le(0x1D, into: &executable)
+    le(16, into: &executable)
+    le(48, into: &executable)
+    le(UInt32(signature.count), into: &executable)
+    executable.append(signature)
+    return executable
 }
 
 private struct LegacyBox: Codable {
