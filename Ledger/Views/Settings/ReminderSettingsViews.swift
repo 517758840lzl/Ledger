@@ -85,7 +85,7 @@ struct ReminderSettingsView: View {
                             .frame(width: 36, height: 36)
                             .background(RoundedRectangle(cornerRadius: 10).fill(AppTheme.greenSoft))
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("Ledger").font(.subheadline.weight(.semibold))
+                            Text("Qingji").font(.subheadline.weight(.semibold))
                             Text(L10n.t("settings.reminder_preview_body"))
                                 .font(.caption)
                                 .foregroundStyle(AppTheme.textSecondary)
@@ -153,8 +153,8 @@ enum ReminderScheduler {
         date.hour = settings.reminderHour
         date.minute = settings.reminderMinute
         let content = UNMutableNotificationContent()
-        content.title = "Ledger"
-        content.body = L10n.t("settings.reminder_preview_body")
+        content.title = "Qingji"
+        content.body = L10nPack.text("settings.reminder_preview_body", language: settings.languageCode)
         content.sound = .default
         let trigger = UNCalendarNotificationTrigger(dateMatching: date, repeats: true)
         let req = UNNotificationRequest(identifier: id, content: content, trigger: trigger)

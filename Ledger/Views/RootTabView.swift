@@ -59,6 +59,7 @@ struct RootTabView: View {
         }
         // Keyboard must cover the bar. Letting the safe area shrink lifts the bar onto the keyboard.
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .scrollDismissesKeyboard(.immediately)
         .animation(.easeInOut(duration: 0.2), value: showsTabBar)
         .tint(AppTheme.greenDark)
         .overlay {

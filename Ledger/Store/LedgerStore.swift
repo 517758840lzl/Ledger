@@ -72,6 +72,7 @@ final class LedgerStore: ObservableObject {
         defaults.set([languageCode], forKey: "AppleLanguages")
         localeEpoch &+= 1
         if persist { save() }
+        ReminderScheduler.resync(settings)
     }
 
     // MARK: - Persistence

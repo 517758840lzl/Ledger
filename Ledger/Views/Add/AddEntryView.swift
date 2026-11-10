@@ -47,8 +47,6 @@ struct AddEntryView: View {
                 .padding(.top, 8)
                 .padding(.bottom, 8)
             }
-            .scrollDismissesKeyboard(.interactively)
-
             // White rounded keypad bar pinned to the bottom
             keypad
                 .padding(12)

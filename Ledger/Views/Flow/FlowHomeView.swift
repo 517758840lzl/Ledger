@@ -82,7 +82,6 @@ struct FlowHomeView: View {
                 .padding(.horizontal, 16)
                 .padding(.bottom, 110)
             }
-            .scrollDismissesKeyboard(.interactively)
             .background(AppTheme.page)
             .navigationTitle(L10n.flowTitle)
             .navigationBarTitleDisplayMode(.inline)

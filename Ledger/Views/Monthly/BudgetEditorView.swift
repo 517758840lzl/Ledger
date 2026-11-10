@@ -65,7 +65,6 @@ struct BudgetEditorView: View {
             .padding(16)
             .padding(.bottom, 24)
         }
-        .scrollDismissesKeyboard(.interactively)
         .background(AppTheme.page.ignoresSafeArea())
         .navigationTitle("\(yearMonth) \(L10n.budget)")
         .navigationBarTitleDisplayMode(.inline)

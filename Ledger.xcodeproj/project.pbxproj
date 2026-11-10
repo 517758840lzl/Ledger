@@ -304,7 +304,7 @@
 				DEVELOPMENT_TEAM = "$(APP_DEVELOPMENT_TEAM)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Ledger/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Ledger;
+				INFOPLIST_KEY_CFBundleDisplayName = Qingji;
 				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "Optional daily reminders to log expenses. Data stays on this device.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
@@ -344,7 +344,7 @@
 				DEVELOPMENT_TEAM = "$(APP_DEVELOPMENT_TEAM)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Ledger/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Ledger;
+				INFOPLIST_KEY_CFBundleDisplayName = Qingji;
 				INFOPLIST_KEY_NSUserNotificationsUsageDescription = "Optional daily reminders to log expenses. Data stays on this device.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
