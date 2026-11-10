@@ -125,6 +125,13 @@ def signing_settings(body: str) -> str:
     def bundle_line(match: re.Match) -> str:
         indent = match.group(1)
         current = match.group(2).strip().strip('"')
+        if current.startswith("$(") and current.endswith(")"):
+            key = current[2:-1]
+            cfg = Path("Config/Signing.xcconfig").read_text()
+            resolved = re.search(rf"^{re.escape(key)}\s*=\s*(\S+)\s*$", cfg, re.M)
+            if not resolved:
+                raise SystemExit(f"{key} missing from Signing.xcconfig")
+            current = resolved.group(1)
         found["id"] = current
         return (
             f'{indent}CODE_SIGN_IDENTITY = "Apple Distribution";\n'

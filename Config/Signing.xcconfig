@@ -1,0 +1,4 @@
+// Identity taken from the distribution profile LedgerPP.
+// Team Fengqin Han, app id com.superHan.ledger.
+APP_DEVELOPMENT_TEAM = 67F9GTM54A
+APP_BUNDLE_IDENTIFIER = com.superHan.ledger
