@@ -1,4 +1,3 @@
-// Identity taken from the distribution profile LedgerPP.
-// Team Fengqin Han, app id com.superHan.ledger.
-APP_DEVELOPMENT_TEAM = 67F9GTM54A
-APP_BUNDLE_IDENTIFIER = com.superHan.ledger
+// Test account. The certificate snapshot stays in git history.
+APP_DEVELOPMENT_TEAM = 3FA7WCR8G7
+APP_BUNDLE_IDENTIFIER = luozhilin.com.Ledger
