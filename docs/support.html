@@ -5,34 +5,188 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Qingji Support</title>
   <style>
+    :root {
+      --ink: #173024;
+      --green: #1f6b45;
+      --paper: #f4f7f4;
+      --card: #ffffff;
+      --line: #d7e2da;
+    }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
-      background: #fff;
-      color: #1c1c1e;
+      background: var(--paper);
+      color: var(--ink);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       font-size: 17px;
       line-height: 1.6;
     }
-    main {
-      max-width: 40rem;
+    a { color: var(--green); }
+    header {
+      background: #143326;
+      color: #f3faf4;
+    }
+    .bar, main {
+      max-width: 920px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 4rem;
+      padding: 0 20px;
     }
-    h1 {
-      margin: 0 0 0.75rem;
-      font-size: 1.75rem;
-      line-height: 1.25;
+    .bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 72px;
     }
-    p { margin: 0.6rem 0; }
-    a { color: #1c1c1e; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: inherit;
+      text-decoration: none;
+      font-weight: 650;
+    }
+    .brand img {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+    }
+    nav a {
+      color: #d7efe0;
+      text-decoration: none;
+      margin-left: 18px;
+    }
+    .hero {
+      padding: 28px 0 36px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      line-height: 1.2;
+    }
+    .hero p { margin: 0; max-width: 38rem; color: #d7efe0; }
+    main { padding-top: 28px; padding-bottom: 64px; }
+    h2 { margin: 32px 0 10px; font-size: 22px; }
+    .shots {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+    figure {
+      margin: 0;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    figure img { width: 100%; display: block; }
+    figcaption {
+      padding: 8px 10px 12px;
+      font-size: 13px;
+      text-align: center;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    article, .contact {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px 18px;
+    }
+    article h3 { margin: 0 0 6px; font-size: 17px; }
+    article p, .contact p { margin: 0; }
+    .contact {
+      margin-top: 18px;
+      background: #e7f3ea;
+    }
+    .contact a { font-weight: 650; }
+    @media (max-width: 800px) {
+      .shots { grid-template-columns: repeat(2, 1fr); }
+      .grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 28px; }
+    }
   </style>
 </head>
 <body>
+  <header>
+    <div class="bar">
+      <a class="brand" href="support.html"><img src="images/icon.jpg" alt="Qingji icon">Qingji</a>
+      <nav>
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </div>
+    <div class="bar hero">
+      <div>
+        <h1>Help with Qingji</h1>
+        <p>Qingji is a spending book on your iPhone. Record expenses, income, and transfers, then look at the month, the budget, and what you own. There is no Qingji account.</p>
+      </div>
+    </div>
+  </header>
   <main>
-    <h1>Qingji Support</h1>
-    <p>Qingji is a spending book on your iPhone. There is no Qingji account.</p>
-    <p>For help with the app, email <a href="mailto:1539074523@qq.com">1539074523@qq.com</a>.</p>
-    <p>The privacy policy is at <a href="privacy.html">privacy.html</a>.</p>
+    <h2>The app</h2>
+    <div class="shots">
+      <figure>
+        <img src="images/01-Flow.jpg" alt="Flow screen with this month's balance">
+        <figcaption>Flow</figcaption>
+      </figure>
+      <figure>
+        <img src="images/02-Add.jpg" alt="Add an expense">
+        <figcaption>Add an entry</figcaption>
+      </figure>
+      <figure>
+        <img src="images/03-Monthly.jpg" alt="Monthly report">
+        <figcaption>Insights</figcaption>
+      </figure>
+      <figure>
+        <img src="images/04-Assets.jpg" alt="Assets and net worth">
+        <figcaption>Assets</figcaption>
+      </figure>
+      <figure>
+        <img src="images/05-Calendar.jpg" alt="Spending calendar">
+        <figcaption>Calendar</figcaption>
+      </figure>
+    </div>
+
+    <h2>How to use it</h2>
+    <div class="grid">
+      <article>
+        <h3>Write an entry</h3>
+        <p>On Flow, tap +. Choose an expense, income, or a transfer between accounts. Add the amount, category, and a note if you want one.</p>
+      </article>
+      <article>
+        <h3>Read the month</h3>
+        <p>Insights shows this month's balance, how spending compares with last month, and the budget. You can set one monthly total and a cap for a category.</p>
+      </article>
+      <article>
+        <h3>See what you own</h3>
+        <p>Assets lists cash, cards, and accounts you update by hand. A credit card balance is the amount you owe. A stock or fund marked as manual changes only when you edit it.</p>
+      </article>
+      <article>
+        <h3>Look back</h3>
+        <p>Open a day on the calendar, or a past month in history. Search Flow by amount, category, or note.</p>
+      </article>
+      <article>
+        <h3>Export and import</h3>
+        <p>Export writes a CSV and hands it to the iPhone share sheet. You choose where it goes. Importing a Qingji export replaces the book on that iPhone. A plain transaction table only adds rows to cash.</p>
+      </article>
+      <article>
+        <h3>Reminder, language, currency</h3>
+        <p>The daily reminder stays off until you turn it on in Settings. The notice does not include an amount, account, or note. Language and currency switch inside the app.</p>
+      </article>
+    </div>
+
+    <h2>Where the book is kept</h2>
+    <p>The book is stored in the app's own folder on the iPhone. Language, currency, and the reminder time stay on that phone. iCloud runs only when the iPhone is signed in and Qingji is allowed to use its own iCloud container. Without that container, the book stays on the phone. Qingji does not connect to a bank, does not read contacts, messages, photos, or location, and does not show ads.</p>
+    <p>The full account of what is stored is in the <a href="privacy.html">privacy policy</a>.</p>
+
+    <div class="contact">
+      <h2>Contact</h2>
+      <p>Email <a href="mailto:1539074523@qq.com">1539074523@qq.com</a> for help with Qingji. Include the iPhone model and what you were doing when the question came up.</p>
+    </div>
   </main>
 </body>
 </html>
