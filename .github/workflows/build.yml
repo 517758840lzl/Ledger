@@ -1,4 +1,4 @@
-# Sign an iOS ipa. App Store Connect upload is off until the app exists.
+# Sign an iOS ipa and upload it to App Store Connect.
 # Manual run. Repository secrets:
 # IOS_DIST_P12_BASE64、IOS_DIST_P12_PASSWORD、IOS_PROVISION_PROFILE_BASE64、
 # IOS_TEAM_ID、IOS_PROVISIONING_PROFILE_NAME、
@@ -46,7 +46,6 @@ jobs:
           if-no-files-found: error
 
       - name: Upload to App Store Connect
-        if: false
         env:
           APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
           APPSTORE_KEY_ID: ${{ secrets.APPSTORE_KEY_ID }}
