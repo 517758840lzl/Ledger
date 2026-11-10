@@ -152,17 +152,29 @@ def signing_settings(body: str) -> str:
     bundle_ids.append(found["id"])
     return updated
 
+def configuration_parts(source, config_id):
+    marker = f"\t\t{config_id} /*"
+    start = source.find(marker)
+    settings_key = "\n\t\t\tbuildSettings = {\n"
+    settings = source.find(settings_key, start)
+    if start < 0 or settings < 0:
+        return None
+    body_start = settings + len(settings_key)
+    close_key = "\n\t\t\t};\n"
+    close = source.find(close_key, body_start)
+    if close < 0:
+        return None
+    return source[start:body_start], source[body_start:close], source[close:close + len(close_key)], close + len(close_key)
+
 bundle_ids = []
 patched = 0
 for config_id in config_ids:
-    match = re.search(
-        rf"(\t\t{config_id} /\* .*? \*/ = \{{\n\t\t\tisa = XCBuildConfiguration;\n\t\t\tbuildSettings = \{{\n)(.*?)(\n\t\t\t\}};\n)",
-        text,
-        re.S,
-    )
-    if not match:
+    parts = configuration_parts(text, config_id)
+    if not parts:
         raise SystemExit(f"build configuration {config_id} not found")
-    text = text[: match.start()] + match.group(1) + signing_settings(match.group(2)) + match.group(3) + text[match.end() :]
+    prefix, body, suffix, end = parts
+    start = text.find(prefix)
+    text = text[:start] + prefix + signing_settings(body) + suffix + text[end:]
     patched += 1
 
 if len(set(bundle_ids)) != 1:
