@@ -3,6 +3,7 @@ xcuserdata/
 *.xcuserstate
 DerivedData/
 build/
+ios/ExportOptions.ci.plist
 *.hmap
 *.ipa
 *.dSYM.zip
